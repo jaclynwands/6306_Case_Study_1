@@ -1,0 +1,37 @@
+---
+title: '6306 DDS: Case Study 1'
+author: "Jaclyn Ann Coate & Huy Hoang Nguyen"
+date: "10/7/2019"
+output: html_document
+---
+
+```{r}
+```
+
+
+```{r}
+```
+
+
+```{r}
+```
+
+
+```{r}
+```
+
+
+```{r}
+```
+
+
+```{r}
+```
+
+
+```{r}
+```
+
+
+```{r}
+```
