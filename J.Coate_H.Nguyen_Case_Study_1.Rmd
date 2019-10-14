@@ -5,11 +5,20 @@ date: "10/7/2019"
 output: html_document
 ---
 
+#1.  How many breweries are present in each state?
+
+## Import data Breweries into R
 ```{r}
+breweries <- read.csv(file.choose(),header = TRUE)
+breweries
 ```
 
+#2. Merge beer data with the breweries data. Print the first 6 observations and the last six observations to check the merged file.  (RMD only, this does not need to be included in the presentation or the deck.)
 
+## Import Beers data
 ```{r}
+beers <- read.csv(file.choose(),header = TRUE)
+beers
 ```
 
 
