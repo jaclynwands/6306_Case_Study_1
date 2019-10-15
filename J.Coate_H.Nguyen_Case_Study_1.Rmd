@@ -5,11 +5,16 @@ date: "10/7/2019"
 output: html_document
 ---
 
+# Prep Environment
+```{r}
+library(tidyverse)
+```
+
 # 1. How many breweries are present in each state?
 
 ## Import data Breweries into R
 ```{r}
-breweries <- read.csv(file.choose(),header = TRUE)
+breweries <- read.csv(read.csv("https://raw.githubusercontent.com/JaclynCoate/6306_Case_Study_1/master/Breweries.csv.webloc"),header = TRUE)
 breweries
 ```
 
