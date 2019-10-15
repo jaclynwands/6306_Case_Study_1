@@ -8,46 +8,93 @@ output: html_document
 # Prep Environment
 ```{r}
 library(tidyverse)
+library(ggthemes)
+library(plyr)
+library(dplyr)
 ```
 
 # 1. How many breweries are present in each state?
 
 ## Import data Breweries into R
 ```{r}
-breweries <- read.csv(read.csv("https://raw.githubusercontent.com/JaclynCoate/6306_Case_Study_1/master/Breweries.csv.webloc"),header = TRUE)
+breweries <- read.csv("https://raw.githubusercontent.com/BivinSadler/MDS-6306-Doing-Data-Science-Fall-2019/master/Unit%208%20and%209%20Case%20Study%201/Breweries.csv", header = TRUE)
 breweries
+nrow(breweries)
+summary(breweries)
 ```
+
+## Graph breweries by state
+```{r}
+breweries %>% ggplot(mapping = aes(x=State, fill=State)) +
+  geom_bar(sstat = "identity") +
+  #theme_excel_new() +
+  theme_tufte() +
+ggtitle("Breweries by State") + ylab("Count") + xlab("State")
+```
+
+#Jaclyn Completed:
+#### Created reproducible import code for Huy and Jaclyn to be able to reproduce on their local computers.
+#### Added nrow and ggplot to properly graph and answer question 1
+
+#Huy To Do: 
+#### Huy: Add lables to the top of every bar in the chart above.
+#### Huy: Remove colored labels from the graph.
+
+
 
 # 2. Merge beer data with the breweries data. Print the first 6 observations and the last six observations to check the merged file.  (RMD only, this does not need to be included in the presentation or the deck.)
 
 ## Import Beers data
 ```{r}
-beers <- read.csv(file.choose(),header = TRUE)
-beers
+beers <- read.csv("https://raw.githubusercontent.com/BivinSadler/MDS-6306-Doing-Data-Science-Fall-2019/master/Unit%208%20and%209%20Case%20Study%201/Beers.csv", header = TRUE)
+str(beers)
 ```
 
 ## Observe that ID on beers - Brewery_id and and breweries - Brew_ID  - we rename by Brew_ID
 ```{r}
-library(plyr)
-library(dplyr)
 beers <- rename(beers, Brew_ID = Brewery_id)
+beers
 ```
 
-## Renamer Name in breweries by Name_Brew and Name in beers by Name_Beer
+## Rename "Name" in breweries by "Name_Brew" and "Name" in beers by "Name_Beer"
 ```{r}
 breweries <- rename(breweries, Name_Brew = Name)
 beers <- rename(beers, Name_Beer = Name)
 
+breweries
+beers
+```
+
+## Complete full_join of both data frames to loose minimum amount of data
+```{r}
 brew.beer <- full_join(breweries, beers, by = "Brew_ID")
 str(brew.beer)
+brew.beer
 ```
+
+## Print first 6 and last 6 rows of merged data set
+```{r}
+brew.beer %>% tail(6)
+brew.beer %>% head(6)
+```
+
+#Jaclyn Completed:
+#### Created reproducible import code for Huy and Jaclyn to be able to reproduce on their local computers.
+#### Read through and added 'evaluation' code lines for completed data sets
+#### Added "tail" and "head" code to to satisfy the question requirements
+
+#Huy Completed: 
+#### Column rename of "key": "Brew_ID"
+#### Full join merge between tables
+
 
 # 3. Address the missing values in each column.
 ```{r}
-library(tidyverse)
 brew.beer %>% summarise_all(funs(sum(is.na(.))))
-## Only ABV 62NA and IBU 1005NA
 ```
+## Only ABV 62NA and IBU 1005NA
+#### Huy: Should we add anyhting here for 'addressing' the NAs? Should we drop them? Should we talk more about them?
+
 
 # 4. Compute the median alcohol content and international bitterness unit for each state. Plot a bar chart to compare.
 
@@ -55,28 +102,57 @@ brew.beer %>% summarise_all(funs(sum(is.na(.))))
 ```{r}
 brew.beer.cleanABV <- brew.beer %>% filter(!is.na(ABV))
 MedianABV <- brew.beer.cleanABV %>% group_by(State) %>% summarise(medABV = median(c(ABV)))
-MedianABV %>% ggplot(aes(fill=State, y=medABV, x=State)) + geom_bar(stat="identity")
+MedianABV %>% ggplot(aes(fill=State, y=medABV, x=State)) + geom_bar(stat="identity") + 
+  theme_excel_new() +
+ggtitle("Median ABV by State") + ylab("ABV") + xlab("State")
 
 brew.beer.cleanIBU <- brew.beer %>% filter(!is.na(IBU))
 MedianIBU <- brew.beer.cleanIBU %>% group_by(State) %>% summarise(medIBU = median(c(IBU)))
-MedianIBU %>% ggplot(aes(fill=State, y=medIBU, x=State)) + geom_bar(stat="identity")
+MedianIBU %>% ggplot(aes(fill=State, y=medIBU, x=State)) + geom_bar(stat="identity") + 
+  theme_excel_new() +
+ggtitle("Median IBU by State") + ylab("IBU") + xlab("State")
 ```
-# 5. Which state has the maximum alcoholic (ABV) beer? Which state has the most bitter (IBU) beer?
+#### Huy: Can we clean up these bar charts a little bit? They seem crowded. I've added a theme, labels, and titles for clarity. Can you remove the colored key and add lables to the top of each state?
+
+
+
+# 5a. Which state has the maximum alcoholic (ABV) beer? 
+## Huy: I am a little confused here. He's asking for the max ABV not the max median. Shouldn't we take this from the original merged data set and not the median calculation?
 ```{r}
 y_maxABV <- max(MedianABV[,2])
 y_maxABV
 stateABV_associated <- MedianABV[MedianABV$medABV == y_maxABV, "State"]
 stateABV_associated
+```
 
+# 5b. Which state has the most bitter (IBU) beer?
+## Huy: I am a little confused here. He's asking for the max Bitter not the max median IBU. Shouldn't we take this from the original merged data set and not the median calculation?
+```{r}
 y_maxIBU <- max(MedianIBU[,2])
 y_maxIBU
 stateIBU_associated <- MedianIBU[MedianIBU$medIBU == y_maxIBU, "State"]
 stateIBU_associated
 ```
 
+
+
+
+
 # 6. Comment on the summary statistics and distribution of the ABV variable.
 ```{r}
 summary(MedianABV)
 ```
 
-# 7. Is there an apparent relationship between the bitterness of the beer and its alcoholic content? Draw a scatter plot.  Make your best judgment of a relationship and EXPLAIN your answer.
+
+
+# 7a. Is there an apparent relationship between the bitterness of the beer and its alcoholic content? 
+# 7b. Draw a scatter plot.  
+# 7c. Make your best judgment of a relationship and EXPLAIN your answer.
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
