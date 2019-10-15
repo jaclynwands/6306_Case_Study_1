@@ -186,16 +186,24 @@ summary(MedianABV)
 
 
 # 7a. Is there an apparent relationship between the bitterness of the beer and its alcoholic content? 
-# 7b. Draw a scatter plot.  
+## There does seem to be a relationsihp between IBU and ABV. We will further investigate with the below.
+
+# 7b. Draw a scatter plot.
+```{r}
+brew.beer
+brew.beer %>% ggplot(mapping = aes(x=IBU, y=ABV)) +
+  geom_point() + 
+  geom_smooth(method = 'lm') +
+  theme_excel_new() +
+ggtitle("XXXXX") + ylab("XXXXX") + xlab("XXXXX")
+```
+
 # 7c. Make your best judgment of a relationship and EXPLAIN your answer.
-```{r}
-```
+## Based on the above scatter plot and correlation line we can see a small positive linear relationship. This tells us that as the alcohol content (ABV), in general, so does the bitterness (IBU). This linear correlation means there is a relationship but does not mean that we can provide causation. Therefore, while, these two things do have a positive linear relationship, we cannot clearly state that one high value causes the high value of another.
 
-```{r}
-```
 
-```{r}
-```
+
+
 # 8. Budweiser would also like to investigate the difference with respect to IBU and ABV between IPAs (India Pale Ales) and other types of Ale (any beer with “Ale” in its name other than IPA).  You decide to use KNN clustering to investigate this relationship.  Provide statistical evidence one way or the other. You can of course assume your audience is comfortable with percentages … KNN is very easy to understand.  
 ```{r}
 ```
