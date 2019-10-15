@@ -5,6 +5,13 @@ date: "10/7/2019"
 output: html_document
 ---
 
+#Introduction
+# a.	The introduction needs to be written as if you are presenting the work to the CEO and CFO of Budweiser (your client) and that they only have had one class in statistics.  If it sounds like a student presentation, that is not acceptable.  You may assume that the CEO and CFO gave you the data and gave you the directive to report any interesting finding that you may uncover through your analysis.
+
+# b.	Briefly explain the purpose of the code. The explanations should appear as a sentence or two before or after the code chunk. Even though you will not be hiding the code chunks (so that I can see the code), you need to assume that the client can’t see them.
+
+# c.	Use R to code answers concerning the seven questions below.
+
 # Prep Environment
 ```{r}
 library(tidyverse)
@@ -23,7 +30,7 @@ nrow(breweries)
 summary(breweries)
 ```
 
-## Graph breweries by state
+## Breweries graphed by state
 ```{r}
 breweries %>% ggplot(mapping = aes(x=State, fill=State)) +
   geom_bar(sstat = "identity") +
@@ -32,13 +39,14 @@ breweries %>% ggplot(mapping = aes(x=State, fill=State)) +
 ggtitle("Breweries by State") + ylab("Count") + xlab("State")
 ```
 
+#Huy To Do: 
+#### Add lables to the top of every bar in the chart above.
+#### Remove colored labels from the graph.
+
 #Jaclyn Completed:
 #### Created reproducible import code for Huy and Jaclyn to be able to reproduce on their local computers.
 #### Added nrow and ggplot to properly graph and answer question 1
 
-#Huy To Do: 
-#### Huy: Add lables to the top of every bar in the chart above.
-#### Huy: Remove colored labels from the graph.
 
 
 
@@ -78,14 +86,16 @@ brew.beer %>% tail(6)
 brew.beer %>% head(6)
 ```
 
+#Huy Completed: 
+#### Column rename of "key": "Brew_ID"
+#### Full join merge between tables
+
 #Jaclyn Completed:
 #### Created reproducible import code for Huy and Jaclyn to be able to reproduce on their local computers.
 #### Read through and added 'evaluation' code lines for completed data sets
 #### Added "tail" and "head" code to to satisfy the question requirements
 
-#Huy Completed: 
-#### Column rename of "key": "Brew_ID"
-#### Full join merge between tables
+
 
 
 # 3. Address the missing values in each column.
@@ -94,6 +104,9 @@ brew.beer %>% summarise_all(funs(sum(is.na(.))))
 ```
 ## Only ABV 62NA and IBU 1005NA
 #### Huy: Should we add anyhting here for 'addressing' the NAs? Should we drop them? Should we talk more about them?
+#### Jaclyn to talk to TA because this question is very vague
+
+
 
 
 # 4. Compute the median alcohol content and international bitterness unit for each state. Plot a bar chart to compare.
@@ -112,27 +125,54 @@ MedianIBU %>% ggplot(aes(fill=State, y=medIBU, x=State)) + geom_bar(stat="identi
   theme_excel_new() +
 ggtitle("Median IBU by State") + ylab("IBU") + xlab("State")
 ```
+
+#Huy Completed: 
+#### Filtering out NA 
+#### Graphing Median ABV/IBU by State
 #### Huy: Can we clean up these bar charts a little bit? They seem crowded. I've added a theme, labels, and titles for clarity. Can you remove the colored key and add lables to the top of each state?
+
+#Jaclyn Completed:
+#### Themed graphs
+#### Labeles and titled graphs
+
 
 
 
 # 5a. Which state has the maximum alcoholic (ABV) beer? 
 ## Huy: I am a little confused here. He's asking for the max ABV not the max median. Shouldn't we take this from the original merged data set and not the median calculation?
+
 ```{r}
 y_maxABV <- max(MedianABV[,2])
 y_maxABV
 stateABV_associated <- MedianABV[MedianABV$medABV == y_maxABV, "State"]
 stateABV_associated
 ```
+### The State with the highest median ABV is DC and KY at 6.45%.
+
+## Jaclyn's code on this question
+```{r}
+brew.beer
+brew.beer[which.max(brew.beer$ABV),]
+```
+### The state with the highest ABV is Colorado at 12.8%.
 
 # 5b. Which state has the most bitter (IBU) beer?
 ## Huy: I am a little confused here. He's asking for the max Bitter not the max median IBU. Shouldn't we take this from the original merged data set and not the median calculation?
+
 ```{r}
 y_maxIBU <- max(MedianIBU[,2])
 y_maxIBU
 stateIBU_associated <- MedianIBU[MedianIBU$medIBU == y_maxIBU, "State"]
 stateIBU_associated
 ```
+### The state with the highest median IBU is Main at 61.
+
+## Jaclyn's code on this question
+```{r}
+brew.beer
+brew.beer[which.max(brew.beer$IBU),]
+```
+### The sate with the highest IBU is Oregon at 138.
 
 
 
@@ -148,6 +188,33 @@ summary(MedianABV)
 # 7a. Is there an apparent relationship between the bitterness of the beer and its alcoholic content? 
 # 7b. Draw a scatter plot.  
 # 7c. Make your best judgment of a relationship and EXPLAIN your answer.
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+# 8. Budweiser would also like to investigate the difference with respect to IBU and ABV between IPAs (India Pale Ales) and other types of Ale (any beer with “Ale” in its name other than IPA).  You decide to use KNN clustering to investigate this relationship.  Provide statistical evidence one way or the other. You can of course assume your audience is comfortable with percentages … KNN is very easy to understand.  
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+
+# 9. Knock their socks off!  Find one other useful inference from the data that you feel Budweiser may be able to find value in.  You must convince them why it is important and back up your conviction with appropriate statistical evidence. 
+
+```{r}
+```
+
 ```{r}
 ```
 
