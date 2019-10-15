@@ -5,7 +5,7 @@ date: "10/7/2019"
 output: html_document
 ---
 
-#1.  How many breweries are present in each state?
+# 1. How many breweries are present in each state?
 
 ## Import data Breweries into R
 ```{r}
@@ -13,7 +13,7 @@ breweries <- read.csv(file.choose(),header = TRUE)
 breweries
 ```
 
-#2. Merge beer data with the breweries data. Print the first 6 observations and the last six observations to check the merged file.  (RMD only, this does not need to be included in the presentation or the deck.)
+# 2. Merge beer data with the breweries data. Print the first 6 observations and the last six observations to check the merged file.  (RMD only, this does not need to be included in the presentation or the deck.)
 
 ## Import Beers data
 ```{r}
@@ -21,26 +21,57 @@ beers <- read.csv(file.choose(),header = TRUE)
 beers
 ```
 
-
+## Observe that ID on beers - Brewery_id and and breweries - Brew_ID  - we rename by Brew_ID
 ```{r}
+library(plyr)
+library(dplyr)
+beers <- rename(beers, Brew_ID = Brewery_id)
 ```
 
-
+## Renamer Name in breweries by Name_Brew and Name in beers by Name_Beer
 ```{r}
+breweries <- rename(breweries, Name_Brew = Name)
+beers <- rename(beers, Name_Beer = Name)
+
+brew.beer <- full_join(breweries, beers, by = "Brew_ID")
+str(brew.beer)
 ```
 
-
+# 3. Address the missing values in each column.
 ```{r}
+library(tidyverse)
+brew.beer %>% summarise_all(funs(sum(is.na(.))))
+## Only ABV 62NA and IBU 1005NA
 ```
 
+# 4. Compute the median alcohol content and international bitterness unit for each state. Plot a bar chart to compare.
 
+## We will create 2 df for ABV not NA and IBU not NA - we dont want 1 df for both because we loose a lot of data - if we considerABV,... only 62 deleted and IBU
 ```{r}
+brew.beer.cleanABV <- brew.beer %>% filter(!is.na(ABV))
+MedianABV <- brew.beer.cleanABV %>% group_by(State) %>% summarise(medABV = median(c(ABV)))
+MedianABV %>% ggplot(aes(fill=State, y=medABV, x=State)) + geom_bar(stat="identity")
+
+brew.beer.cleanIBU <- brew.beer %>% filter(!is.na(IBU))
+MedianIBU <- brew.beer.cleanIBU %>% group_by(State) %>% summarise(medIBU = median(c(IBU)))
+MedianIBU %>% ggplot(aes(fill=State, y=medIBU, x=State)) + geom_bar(stat="identity")
+```
+# 5. Which state has the maximum alcoholic (ABV) beer? Which state has the most bitter (IBU) beer?
+```{r}
+y_maxABV <- max(MedianABV[,2])
+y_maxABV
+stateABV_associated <- MedianABV[MedianABV$medABV == y_maxABV, "State"]
+stateABV_associated
+
+y_maxIBU <- max(MedianIBU[,2])
+y_maxIBU
+stateIBU_associated <- MedianIBU[MedianIBU$medIBU == y_maxIBU, "State"]
+stateIBU_associated
 ```
 
-
+# 6. Comment on the summary statistics and distribution of the ABV variable.
 ```{r}
+summary(MedianABV)
 ```
 
-
-```{r}
-```
+# 7. Is there an apparent relationship between the bitterness of the beer and its alcoholic content? Draw a scatter plot.  Make your best judgment of a relationship and EXPLAIN your answer.
