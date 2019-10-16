@@ -37,7 +37,14 @@ breweries %>% ggplot(mapping = aes(x=State, fill=State)) +
   #theme_excel_new() +
   theme_tufte() +
 ggtitle("Breweries by State") + ylab("Count") + xlab("State")
+
 ```
+
+## How many breweries are present in each state?
+brew.state <-table(breweries$State)
+brew.state
+
+
 
 #Huy To Do: 
 #### Add lables to the top of every bar in the chart above.
@@ -47,6 +54,8 @@ ggtitle("Breweries by State") + ylab("Count") + xlab("State")
 #### Created reproducible import code for Huy and Jaclyn to be able to reproduce on their local computers.
 #### Added nrow and ggplot to properly graph and answer question 1
 
+#Huy Completed:
+#### How many breweries are present in each state? (Number of breweries per state)
 
 
 
