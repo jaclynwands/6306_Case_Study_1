@@ -30,6 +30,12 @@ nrow(breweries)
 summary(breweries)
 ```
 
+## Number of breweries are present in each state? 
+
+brew.state <-table(breweries$State)
+brew.state
+
+
 ## Breweries graphed by state
 ```{r}
 breweries %>% ggplot(mapping = aes(x=State, fill=State)) +
@@ -46,6 +52,10 @@ ggtitle("Breweries by State") + ylab("Count") + xlab("State")
 #Jaclyn Completed:
 #### Created reproducible import code for Huy and Jaclyn to be able to reproduce on their local computers.
 #### Added nrow and ggplot to properly graph and answer question 1
+
+# Huy Completed:
+
+#### Number of breweries are present in each state? (Wev give exact number and after that we show by using bat plot for visualization. What do you think?)
 
 
 
@@ -105,7 +115,7 @@ brew.beer %>% summarise_all(funs(sum(is.na(.))))
 ## Only ABV 62NA and IBU 1005NA
 #### Huy: Should we add anyhting here for 'addressing' the NAs? Should we drop them? Should we talk more about them?
 #### Jaclyn to talk to TA because this question is very vague
-
+#### Huy: I don't want to create only 1 df for ABV and IBU because if we only consider the median of ABV, we only need to delete 62 NA and if we want to calculate IBU, we only need to delete 1005NA. That's why in my following codes for Question 4, I created 2 separated df, one for ABV and one for IBU.
 
 
 
@@ -135,6 +145,8 @@ ggtitle("Median IBU by State") + ylab("IBU") + xlab("State")
 #### Themed graphs
 #### Labeles and titled graphs
 
+#Huy's comment:
+I don't want to create only 1 df for ABV and IBU because if we only consider the median of ABV, we only need to delete 62 NA and if we want to calculate IBU, we only need to delete 1005NA. That's why in my following codes for Question 4, I created 2 separated df, one for ABV and one for IBU.
 
 
 
@@ -155,6 +167,11 @@ brew.beer
 brew.beer[which.max(brew.beer$ABV),]
 ```
 ### The state with the highest ABV is Colorado at 12.8%.
+
+## Huy's comment: 
+It's the maximum ABV, not the median. then we use this code
+brew.beer
+brew.beer[which.max(brew.beer$ABV),]
 
 # 5b. Which state has the most bitter (IBU) beer?
 ## Huy: I am a little confused here. He's asking for the max Bitter not the max median IBU. Shouldn't we take this from the original merged data set and not the median calculation?
@@ -182,7 +199,12 @@ brew.beer[which.max(brew.beer$IBU),]
 ```{r}
 summary(MedianABV)
 ```
+####
+Huy:
 
+I want to add more to  my last code here. The last code for summary statistics anf distributions on median and per state of ABV and here I want to give a genenral sumary
+
+summary(brew.beer.cleanABV$ABV)
 
 
 # 7a. Is there an apparent relationship between the bitterness of the beer and its alcoholic content? 
@@ -191,12 +213,24 @@ summary(MedianABV)
 # 7b. Draw a scatter plot.
 ```{r}
 brew.beer
+
 brew.beer %>% ggplot(mapping = aes(x=IBU, y=ABV)) +
+  
   geom_point() + 
+  
   geom_smooth(method = 'lm') +
+  
   theme_excel_new() +
-ggtitle("XXXXX") + ylab("XXXXX") + xlab("XXXXX")
+  
+  ggtitle("Relationship between the bitterness of the beer and its alcoholic content") + ylab("ABV") + xlab("IBU")
+
 ```
+```
+
+## Jaclyn: The scatter plot
+
+## Huy: Complete this scatter plot
+
 
 # 7c. Make your best judgment of a relationship and EXPLAIN your answer.
 ## Based on the above scatter plot and correlation line we can see a small positive linear relationship. This tells us that as the alcohol content (ABV), in general, so does the bitterness (IBU). This linear correlation means there is a relationship but does not mean that we can provide causation. Therefore, while, these two things do have a positive linear relationship, we cannot clearly state that one high value causes the high value of another.
