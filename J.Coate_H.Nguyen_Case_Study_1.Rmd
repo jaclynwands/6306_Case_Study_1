@@ -16,9 +16,11 @@ output: html_document
 ```{r}
 library(tidyverse)
 library(ggthemes)
-library(plyr)
 library(dplyr)
 ```
+# I delete plyr package (it's an old version of dplyr)
+
+
 
 # 1. How many breweries are present in each state?
 
@@ -60,18 +62,22 @@ str(beers)
 
 ## Observe that ID on beers - Brewery_id and and breweries - Brew_ID  - we rename by Brew_ID
 ```{r}
-beers <- rename(beers, Brew_ID = Brewery_id)
+beers <-  beers %>% dplyr::rename( Brew_ID = Brewery_id)
 beers
 ```
+# Huy: 
+Rechange the code for beers - reaname Brew_ID
+
 
 ## Rename "Name" in breweries by "Name_Brew" and "Name" in beers by "Name_Beer"
 ```{r}
-breweries <- rename(breweries, Name_Brew = Name)
-beers <- rename(beers, Name_Beer = Name)
+breweries <- breweries %>% dplyr::rename(Name_Brew = Name)  
+beers <- beers %>% dplyr::rename(Name_Beer = Name)
 
 breweries
 beers
 ```
+# Huy: Recode for rename Name_Brew and Name_Beer
 
 ## Complete full_join of both data frames to loose minimum amount of data
 ```{r}
