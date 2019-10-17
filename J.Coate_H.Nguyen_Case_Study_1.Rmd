@@ -201,7 +201,7 @@ brew.beer %>% ggplot(mapping = aes(x=IBU, y=ABV)) +
   geom_point() + 
   geom_smooth(method = 'lm') +
   theme_excel_new() +
-ggtitle("XXXXX") + ylab("XXXXX") + xlab("XXXXX")
+ggtitle("Bitterness (IBU) vs. Alcoholic Content (IBV)") + ylab("XXXXX") + xlab("XXXXX")
 ```
 
 # 7c. Make your best judgment of a relationship and EXPLAIN your answer.
