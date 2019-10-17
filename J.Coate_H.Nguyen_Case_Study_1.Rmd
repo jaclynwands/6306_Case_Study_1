@@ -38,38 +38,28 @@ breweries %>% ggplot(mapping = aes(x=State, fill=State)) +
   geom_bar(sstat = "identity") +
   #theme_excel_new() +
   theme_tufte() +
+  theme(legend.position="none") + 
 ggtitle("Breweries by State") + ylab("Count") + xlab("State")
 ```
-
-#Huy To Do: 
-#### Add lables to the top of every bar in the chart above.
-#### Remove colored labels from the graph.
-
-#Jaclyn Completed:
-#### Created reproducible import code for Huy and Jaclyn to be able to reproduce on their local computers.
-#### Added nrow and ggplot to properly graph and answer question 1
 
 
 
 
 # 2. Merge beer data with the breweries data. Print the first 6 observations and the last six observations to check the merged file.  (RMD only, this does not need to be included in the presentation or the deck.)
 
-## Import Beers data
+## Import Beer data
 ```{r}
 beers <- read.csv("https://raw.githubusercontent.com/BivinSadler/MDS-6306-Doing-Data-Science-Fall-2019/master/Unit%208%20and%209%20Case%20Study%201/Beers.csv", header = TRUE)
 str(beers)
 ```
 
-## Observe that ID on beers - Brewery_id and and breweries - Brew_ID  - we rename by Brew_ID
+## We obvserve that our key value "Brew_ID" from our breweries data is named "Brewery_id". In order to have these values match and make tables easier to merge we are renaming the column in the beer data set.
 ```{r}
 beers <-  beers %>% dplyr::rename( Brew_ID = Brewery_id)
 beers
 ```
-# Huy: 
-Rechange the code for beers - reaname Brew_ID
 
-
-## Rename "Name" in breweries by "Name_Brew" and "Name" in beers by "Name_Beer"
+## We observe that the two name columns have the same name in our Brewery and Beer data sets. So we are giving them unique identifiers.
 ```{r}
 breweries <- breweries %>% dplyr::rename(Name_Brew = Name)  
 beers <- beers %>% dplyr::rename(Name_Beer = Name)
@@ -77,76 +67,68 @@ beers <- beers %>% dplyr::rename(Name_Beer = Name)
 breweries
 beers
 ```
-# Huy: Recode for rename Name_Brew and Name_Beer
 
-## Complete full_join of both data frames to loose minimum amount of data
+## We complete a full_join of both data frames to loose minimum amount of data for review.
 ```{r}
 brew.beer <- full_join(breweries, beers, by = "Brew_ID")
 str(brew.beer)
 brew.beer
 ```
 
-## Print first 6 and last 6 rows of merged data set
+## We print first 6 and last 6 rows of merged data set below.
 ```{r}
 brew.beer %>% tail(6)
 brew.beer %>% head(6)
 ```
 
-#Huy Completed: 
-#### Column rename of "key": "Brew_ID"
-#### Full join merge between tables
-
-#Jaclyn Completed:
-#### Created reproducible import code for Huy and Jaclyn to be able to reproduce on their local computers.
-#### Read through and added 'evaluation' code lines for completed data sets
-#### Added "tail" and "head" code to to satisfy the question requirements
-
 
 
 
 # 3. Address the missing values in each column.
+
+# 3. Address the missing values in each column.
+
+## We review the data nd we see ABV contains 62 NAs and IBU contains 1005 NAs. We are keeping those data frames separate to prevent more data loss.
+### Jaclyn to ask TA best way to 'incorporate' the NAs into data as well.
 ```{r}
 brew.beer %>% summarise_all(funs(sum(is.na(.))))
 ```
-## Only ABV 62NA and IBU 1005NA
-#### Huy: Should we add anyhting here for 'addressing' the NAs? Should we drop them? Should we talk more about them?
-#### Jaclyn to talk to TA because this question is very vague
 
 
 
 
 # 4. Compute the median alcohol content and international bitterness unit for each state. Plot a bar chart to compare.
 
-## We will create 2 df for ABV not NA and IBU not NA - we dont want 1 df for both because we loose a lot of data - if we considerABV,... only 62 deleted and IBU
+## Per discussion above we choose to keep the data frames separate to reduce the amount of data lost to NAs
+### Jaclyn to discuss with TA on how to incorporate the data as well.
+## Graphing Median ABV by State
 ```{r}
 brew.beer.cleanABV <- brew.beer %>% filter(!is.na(ABV))
 MedianABV <- brew.beer.cleanABV %>% group_by(State) %>% summarise(medABV = median(c(ABV)))
-MedianABV %>% ggplot(aes(fill=State, y=medABV, x=State)) + geom_bar(stat="identity") + 
+
+MedianABV %>% ggplot(aes(fill=State, y=medABV, x=State)) + 
+  geom_bar(stat="identity") + 
   theme_excel_new() +
 ggtitle("Median ABV by State") + ylab("ABV") + xlab("State")
+```
 
+## Graphing Median IBU by State
+```{r}
 brew.beer.cleanIBU <- brew.beer %>% filter(!is.na(IBU))
 MedianIBU <- brew.beer.cleanIBU %>% group_by(State) %>% summarise(medIBU = median(c(IBU)))
-MedianIBU %>% ggplot(aes(fill=State, y=medIBU, x=State)) + geom_bar(stat="identity") + 
+
+MedianIBU %>% ggplot(aes(fill=State, y=medIBU, x=State)) + 
+  geom_bar(stat="identity") + 
   theme_excel_new() +
 ggtitle("Median IBU by State") + ylab("IBU") + xlab("State")
 ```
-
-#Huy Completed: 
-#### Filtering out NA 
-#### Graphing Median ABV/IBU by State
-#### Huy: Can we clean up these bar charts a little bit? They seem crowded. I've added a theme, labels, and titles for clarity. Can you remove the colored key and add lables to the top of each state?
-
-#Jaclyn Completed:
-#### Themed graphs
-#### Labeles and titled graphs
 
 
 
 
 # 5a. Which state has the maximum alcoholic (ABV) beer? 
-## Huy: I am a little confused here. He's asking for the max ABV not the max median. Shouldn't we take this from the original merged data set and not the median calculation?
 
+## Below we have listed the higest median ABV.
 ```{r}
 y_maxABV <- max(MedianABV[,2])
 y_maxABV
@@ -156,6 +138,7 @@ stateABV_associated
 ### The State with the highest median ABV is DC and KY at 6.45%.
 
 ## Jaclyn's code on this question
+## Below we have listed the max ABV.
 ```{r}
 brew.beer
 brew.beer[which.max(brew.beer$ABV),]
@@ -163,8 +146,8 @@ brew.beer[which.max(brew.beer$ABV),]
 ### The state with the highest ABV is Colorado at 12.8%.
 
 # 5b. Which state has the most bitter (IBU) beer?
-## Huy: I am a little confused here. He's asking for the max Bitter not the max median IBU. Shouldn't we take this from the original merged data set and not the median calculation?
 
+## Below we have listed the higest median ABV.
 ```{r}
 y_maxIBU <- max(MedianIBU[,2])
 y_maxIBU
@@ -174,12 +157,12 @@ stateIBU_associated
 ### The state with the highest median IBU is Main at 61.
 
 ## Jaclyn's code on this question
+## Below we have listed the max IBU.
 ```{r}
 brew.beer
 brew.beer[which.max(brew.beer$IBU),]
 ```
 ### The sate with the highest IBU is Oregon at 138.
-
 
 
 
