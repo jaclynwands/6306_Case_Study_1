@@ -12,19 +12,17 @@ output: html_document
 
 # c.	Use R to code answers concerning the seven questions below.
 
-# Prep Environment
+# Below we are prepping our environment with different libraries we will need to complete our analysis. 
 ```{r}
 library(tidyverse)
 library(ggthemes)
 library(dplyr)
 ```
-# I delete plyr package (it's an old version of dplyr)
-
 
 
 # 1. How many breweries are present in each state?
 
-## Import data Breweries into R
+## Import data Breweries into R.
 ```{r}
 breweries <- read.csv("https://raw.githubusercontent.com/BivinSadler/MDS-6306-Doing-Data-Science-Fall-2019/master/Unit%208%20and%209%20Case%20Study%201/Breweries.csv", header = TRUE)
 breweries
@@ -32,7 +30,7 @@ nrow(breweries)
 summary(breweries)
 ```
 
-## Breweries graphed by state
+## Breweries bar graphed by state.
 ```{r}
 breweries %>% ggplot(mapping = aes(x=State, fill=State)) +
   geom_bar(sstat = "identity") +
@@ -42,12 +40,13 @@ breweries %>% ggplot(mapping = aes(x=State, fill=State)) +
 ggtitle("Breweries by State") + ylab("Count") + xlab("State")
 ```
 
-
+## ** Breweries geo graphed by state
+## ** Create a Geo map of shaded color for the states with the largest count of breweries ** #
 
 
 # 2. Merge beer data with the breweries data. Print the first 6 observations and the last six observations to check the merged file.  (RMD only, this does not need to be included in the presentation or the deck.)
 
-## Import Beer data
+## Import Beer into data R.
 ```{r}
 beers <- read.csv("https://raw.githubusercontent.com/BivinSadler/MDS-6306-Doing-Data-Science-Fall-2019/master/Unit%208%20and%209%20Case%20Study%201/Beers.csv", header = TRUE)
 str(beers)
@@ -86,10 +85,8 @@ brew.beer %>% head(6)
 
 # 3. Address the missing values in each column.
 
-# 3. Address the missing values in each column.
-
 ## We review the data nd we see ABV contains 62 NAs and IBU contains 1005 NAs. We are keeping those data frames separate to prevent more data loss.
-### Jaclyn to ask TA best way to 'incorporate' the NAs into data as well.
+## **List a data frame of the NA's by category
 ```{r}
 brew.beer %>% summarise_all(funs(sum(is.na(.))))
 ```
@@ -186,6 +183,7 @@ brew.beer %>% ggplot(mapping = aes(x=IBU, y=ABV)) +
   theme_excel_new() +
 ggtitle("Bitterness (IBU) vs. Alcoholic Content (IBV)") + ylab("XXXXX") + xlab("XXXXX")
 ```
+## ** Create a scatter plot of a third variable against the IBU and ABV (e.g. Style of Beer, State) fill with that metric
 
 # 7c. Make your best judgment of a relationship and EXPLAIN your answer.
 ## Based on the above scatter plot and correlation line we can see a small positive linear relationship. This tells us that as the alcohol content (ABV), in general, so does the bitterness (IBU). This linear correlation means there is a relationship but does not mean that we can provide causation. Therefore, while, these two things do have a positive linear relationship, we cannot clearly state that one high value causes the high value of another.
@@ -208,6 +206,9 @@ ggtitle("Bitterness (IBU) vs. Alcoholic Content (IBV)") + ylab("XXXXX") + xlab("
 
 
 # 9. Knock their socks off!  Find one other useful inference from the data that you feel Budweiser may be able to find value in.  You must convince them why it is important and back up your conviction with appropriate statistical evidence. 
+
+# ** We use KNN to assign plausible valuse to the beers that are NA. The we regraph our analysis with this added data.** #
+# ** Then we use this analysis in order to advise Budweiser on how to release beers that will combat the growing microbrewery market that they are loosing market share in ** #
 
 ```{r}
 ```
