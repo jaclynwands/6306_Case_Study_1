@@ -205,6 +205,8 @@ ggtitle("Bitterness (IBU) vs. Alcoholic Content (IBV)") + ylab("XXXXX") + xlab("
 
 
 # 8. Budweiser would also like to investigate the difference with respect to IBU and ABV between IPAs (India Pale Ales) and other types of Ale (any beer with “Ale” in its name other than IPA).  You decide to use KNN clustering to investigate this relationship.  Provide statistical evidence one way or the other. You can of course assume your audience is comfortable with percentages … KNN is very easy to understand.  
+
+## ADDED: The text of case study question 8 has been edited slightly (the deliverables are still the same) in an updated version of the document on github  (from knn - clustering to classification): the goal is to classify between IPA and just Ale using IBU and ABV attributes.
 ```{r}
 ```
 
