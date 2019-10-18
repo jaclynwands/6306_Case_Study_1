@@ -222,8 +222,7 @@ ggtitle("Bitterness (IBU) vs. Alcoholic Content (IBV)") + ylab("XXXXX") + xlab("
 
 # 9. Knock their socks off!  Find one other useful inference from the data that you feel Budweiser may be able to find value in.  You must convince them why it is important and back up your conviction with appropriate statistical evidence. 
 
-# ** We use KNN to assign plausible valuse to the beers that are NA. The we regraph our analysis with this added data.** #
-# ** Then we use this analysis in order to advise Budweiser on how to release beers that will combat the growing microbrewery market that they are loosing market share in ** #
+# ** We use the same analysis above but by Beer Type, this will allow us to advise Budweiser on the Type, IBU, ABV of a new beer to release to compete with the growing market. ** #
 
 ```{r}
 ```
