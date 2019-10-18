@@ -250,7 +250,17 @@ MedianABV %>% ggplot(mapping = aes(y = medABV)) +
         axis.ticks.x=element_blank()) +
   ggtitle("Median ABV Summary Statistics") + ylab("Median ABV") + xlab("")
 ```
-
+## Also doing a summary on IBU for evenness of evaluation
+```{r}
+summary(MedianIBU)
+MedianIBU %>% ggplot(mapping = aes(y = medIBU)) +
+  geom_boxplot(fill = "dark red", color = "black") +
+  theme_excel_new() +
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) +
+  ggtitle("Median ABV Summary Statistics") + ylab("Median ABV") + xlab("")
+```
 
 
 # 7a. Is there an apparent relationship between the bitterness of the beer and its alcoholic content? 
