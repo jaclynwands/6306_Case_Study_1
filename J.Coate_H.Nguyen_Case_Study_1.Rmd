@@ -21,6 +21,8 @@ library(ggthemes)
 library(dplyr)
 install.packages("highcharter")
 library(highcharter)
+install.packages("ggmap")
+library(ggmap)
 ```
 
 
@@ -90,7 +92,8 @@ brew.beer %>% head(6)
 # 3. Address the missing values in each column.
 
 ## We review the data nd we see ABV contains 62 NAs and IBU contains 1005 NAs. We are keeping those data frames separate to prevent more data loss.
-## **List a data frame of the NA's by category
+## **List a data frame of the NA's by category ** ##
+## **We should also discuss why we are choosing to not combine data at this exact moment (we will do it later and KNN to predict the missing values) ** ##
 ```{r}
 brew.beer %>% summarise_all(funs(sum(is.na(.))))
 ```
@@ -102,7 +105,10 @@ brew.beer %>% summarise_all(funs(sum(is.na(.))))
 
 ## Per discussion above we choose to keep the data frames separate to reduce the amount of data lost to NAs
 ### Jaclyn to discuss with TA on how to incorporate the data as well.
+
 ## Graphing Median ABV by State
+
+## **This graph should be ordered from lowest to highest and a color gradient that follows the same code would be a great visual to help our users ** ##
 ```{r}
 brew.beer.cleanABV <- brew.beer %>% filter(!is.na(ABV))
 MedianABV <- brew.beer.cleanABV %>% group_by(State) %>% summarise(medABV = median(c(ABV)))
@@ -114,6 +120,8 @@ ggtitle("Median ABV by State") + ylab("ABV") + xlab("State")
 ```
 
 ## Graphing Median IBU by State
+
+## **This graph should be ordered from lowest to highest and a color gradient that follows the same code would be a great visual to help our users ** ##
 ```{r}
 brew.beer.cleanIBU <- brew.beer %>% filter(!is.na(IBU))
 MedianIBU <- brew.beer.cleanIBU %>% group_by(State) %>% summarise(medIBU = median(c(IBU)))
@@ -136,7 +144,7 @@ y_maxABV
 stateABV_associated <- MedianABV[MedianABV$medABV == y_maxABV, "State"]
 stateABV_associated
 ```
-### The State with the highest median ABV is DC and KY at 6.45%.
+### The States with the highest median ABV is DC and KY at 6.45%.
 
 ## Jaclyn's code on this question
 ## Below we have listed the max ABV.
@@ -145,6 +153,7 @@ brew.beer
 brew.beer[which.max(brew.beer$ABV),]
 ```
 ### The state with the highest ABV is Colorado at 12.8%.
+
 
 # 5b. Which state has the most bitter (IBU) beer?
 
