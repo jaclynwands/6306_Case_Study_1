@@ -23,6 +23,10 @@ install.packages("highcharter")
 library(highcharter)
 install.packages("ggmap")
 library(ggmap)
+install.packages("ggExtra")
+library(ggExtra)
+install.packages("treemapify")
+library(treemapify)
 ```
 
 
@@ -49,13 +53,14 @@ ggtitle("Breweries by State") + ylab("Count") + xlab("State")
 ## ** Breweries geo graphed by state
 ## ** Create a Geo map of shaded color for the states with the largest count of breweries ** #
 
-
+##DONE DONE DONE DONE DONE DONE DONE DONE##
 # 2. Merge beer data with the breweries data. Print the first 6 observations and the last six observations to check the merged file.  (RMD only, this does not need to be included in the presentation or the deck.)
 
-## Import Beer into data R.
+## Import Beer data into R
 ```{r}
 beers <- read.csv("https://raw.githubusercontent.com/BivinSadler/MDS-6306-Doing-Data-Science-Fall-2019/master/Unit%208%20and%209%20Case%20Study%201/Beers.csv", header = TRUE)
 str(beers)
+view(beers)
 ```
 
 ## We obvserve that our key value "Brew_ID" from our breweries data is named "Brewery_id". In order to have these values match and make tables easier to merge we are renaming the column in the beer data set.
@@ -73,6 +78,7 @@ breweries
 beers
 ```
 
+
 ## We complete a full_join of both data frames to loose minimum amount of data for review.
 ```{r}
 brew.beer <- full_join(breweries, beers, by = "Brew_ID")
@@ -89,11 +95,11 @@ brew.beer %>% head(6)
 
 
 
+##DONE DONE DONE DONE DONE DONE DONE DONE##
 # 3. Address the missing values in each column.
 
 ## We review the data nd we see ABV contains 62 NAs and IBU contains 1005 NAs. We are keeping those data frames separate to prevent more data loss.
-## **List a data frame of the NA's by category ** ##
-## **We should also discuss why we are choosing to not combine data at this exact moment (we will do it later and KNN to predict the missing values) ** ##
+
 ```{r}
 brew.beer %>% summarise_all(funs(sum(is.na(.))))
 ```
@@ -101,14 +107,13 @@ brew.beer %>% summarise_all(funs(sum(is.na(.))))
 
 
 
+
 # 4. Compute the median alcohol content and international bitterness unit for each state. Plot a bar chart to compare.
 
 ## Per discussion above we choose to keep the data frames separate to reduce the amount of data lost to NAs
-### Jaclyn to discuss with TA on how to incorporate the data as well.
 
 ## Graphing Median ABV by State
-
-## **This graph should be ordered from lowest to highest and a color gradient that follows the same code would be a great visual to help our users ** ##
+### Huy's Code
 ```{r}
 brew.beer.cleanABV <- brew.beer %>% filter(!is.na(ABV))
 MedianABV <- brew.beer.cleanABV %>% group_by(State) %>% summarise(medABV = median(c(ABV)))
@@ -119,9 +124,36 @@ MedianABV %>% ggplot(aes(fill=State, y=medABV, x=State)) +
 ggtitle("Median ABV by State") + ylab("ABV") + xlab("State")
 ```
 
+### Jaclyn's Code
+```{r}
+brew.beer.cleanABV <- brew.beer %>% filter(!is.na(ABV))
+
+# Group median ABV by State
+brew.beerABV <- aggregate(brew.beer.cleanABV$ABV, by=list(brew.beer.cleanABV$State), FUN = median)
+brew.beerABV
+# Label Columns
+colnames(brew.beerABV) <- c("State", "MedABV")
+brew.beerABV
+# Sort
+brew.beerABV <- brew.beerABV[order(brew.beerABV$MedABV),]
+# Retain order in the Plot
+brew.beerABV$State <- factor(brew.beerABV$State, levels = brew.beerABV$State)
+```
+
+```{r}
+brew.beerABV %>% ggplot(mapping = aes(x=State, y=MedABV)) +
+  geom_bar(stat = "identity") +
+  geom_col(aes(fill = MedABV)) + 
+  scale_fill_gradient(low = "pink", high = "dark red") +
+  theme_excel_new() +
+  theme(legend.position="none", axis.text.x = element_text(angle=65, vjust=0.6)) +
+  ggtitle("Median ABV by State") + ylab("Median ABV") + xlab("State")
+```
+
+
 ## Graphing Median IBU by State
 
-## **This graph should be ordered from lowest to highest and a color gradient that follows the same code would be a great visual to help our users ** ##
+### Huy's Code
 ```{r}
 brew.beer.cleanIBU <- brew.beer %>% filter(!is.na(IBU))
 MedianIBU <- brew.beer.cleanIBU %>% group_by(State) %>% summarise(medIBU = median(c(IBU)))
@@ -132,9 +164,35 @@ MedianIBU %>% ggplot(aes(fill=State, y=medIBU, x=State)) +
 ggtitle("Median IBU by State") + ylab("IBU") + xlab("State")
 ```
 
+### Jaclyn's Code
+```{r}
+brew.beer.cleanIBU <- brew.beer %>% filter(!is.na(IBU))
+MedianIBU <- brew.beer.cleanIBU %>% group_by(State) %>% summarise(medIBU = median(c(IBU)))
+
+MedianIBU %>% ggplot(aes(fill=State, y=medIBU, x=State)) + 
+  geom_bar(stat="identity") + 
+  theme_excel_new() +
+  theme(legend.position="none") +
+ggtitle("Median IBU by State") + ylab("IBU") + xlab("State")
+```
+
+```{r}
+brew.beer.cleanIBU <- brew.beer %>% filter(!is.na(IBU))
+
+# Group median ABV by State
+brew.beerIBU <- aggregate(brew.beer.cleanIBU$IBU, by=list(brew.beer.cleanIBU$State), FUN = median)
+brew.beerIBU
+# Label Columns
+colnames(brew.beerIBU) <- c("State", "MedIBU")
+brew.beerIBU
+# Sort
+brew.beerIBU <- brew.beerIBU[order(brew.beerIBU$MedIBU),]
+# Retain order in the Plot
+brew.beerIBU$State <- factor(brew.beerIBU$State, levels = brew.beerIBU$State)
+```
 
 
-
+##DONE DONE DONE DONE DONE DONE DONE DONE##
 # 5a. Which state has the maximum alcoholic (ABV) beer? 
 
 ## Below we have listed the higest median ABV.
@@ -144,7 +202,7 @@ y_maxABV
 stateABV_associated <- MedianABV[MedianABV$medABV == y_maxABV, "State"]
 stateABV_associated
 ```
-### The States with the highest median ABV is DC and KY at 6.45%.
+### The State with the highest median ABV is DC and KY at 6.45%.
 
 ## Jaclyn's code on this question
 ## Below we have listed the max ABV.
@@ -153,7 +211,6 @@ brew.beer
 brew.beer[which.max(brew.beer$ABV),]
 ```
 ### The state with the highest ABV is Colorado at 12.8%.
-
 
 # 5b. Which state has the most bitter (IBU) beer?
 
@@ -177,9 +234,21 @@ brew.beer[which.max(brew.beer$IBU),]
 
 
 
+
+##DONE DONE DONE DONE DONE DONE DONE##
 # 6. Comment on the summary statistics and distribution of the ABV variable.
+
+## Show boxplot of summary statistics to review more visually (refine graph below)
+### From the summary statistics we can see the median ABV has a pretty small distribution. The majority of the beers that are produced fall between 5.5% - 5.8%. This is slightly higher than the mass produced Budweiser products of 4.2%. Whenever local consumers are given an option they are likely to choose a microbrew that contains a slightly higher ABV than your traditional products. For this reason we will actually be recommending new Budweiser releases by region and of a different ABV than what Budweiser is used to.
 ```{r}
 summary(MedianABV)
+MedianABV %>% ggplot(mapping = aes(y = medABV)) +
+  geom_boxplot(fill = "dark red", color = "black") +
+  theme_excel_new() +
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) +
+  ggtitle("Median ABV Summary Statistics") + ylab("Median ABV") + xlab("")
 ```
 
 
@@ -194,8 +263,40 @@ brew.beer %>% ggplot(mapping = aes(x=IBU, y=ABV)) +
   geom_point() + 
   geom_smooth(method = 'lm') +
   theme_excel_new() +
-ggtitle("Bitterness (IBU) vs. Alcoholic Content (IBV)") + ylab("XXXXX") + xlab("XXXXX")
+ggtitle("Bitterness (IBU) vs. Alcoholic Content (IBV)") + ylab("IBU") + xlab("ABV")
 ```
+
+### 7b. Scatter plot with densigram
+```{r}
+brew.beer
+ggMarginal(brew.beer %>% ggplot(mapping = aes(x=IBU, y=ABV)) +
+  geom_point() + 
+  geom_smooth(method = 'lm') +
+  theme_excel_new() +
+ggtitle("Bitterness (IBU) vs. Alcoholic Content (IBV)") + ylab("IBU") + xlab("ABV"), type = "densigram", fill = "blue")
+```
+
+### 7b. Scatter plot with violin
+```{r}
+brew.beer
+ggMarginal(brew.beer %>% ggplot(mapping = aes(x=IBU, y=ABV)) +
+  geom_point() + 
+  geom_smooth(method = 'lm') +
+  theme_excel_new() +
+ggtitle("Bitterness (IBU) vs. Alcoholic Content (IBV)") + ylab("IBU") + xlab("ABV"), type = "violin", fill = "blue")
+```
+
+# By State
+## NEED TO FIGURE OUT WHY LEGEND IS STILL SHOWING
+```{r}
+brew.beer
+brew.beer %>% ggplot(mapping = aes(x=IBU, y=ABV, color=State)) +
+  geom_point() + 
+  theme(legend.position="none") +
+  theme_excel_new() +
+ggtitle("Bitterness (IBU) vs. Alcoholic Content (IBV)") + ylab("IBU") + xlab("ABV")
+```
+
 ## ** Create a scatter plot of a third variable against the IBU and ABV (e.g. Style of Beer, State) fill with that metric
 
 # 7c. Make your best judgment of a relationship and EXPLAIN your answer.
@@ -222,7 +323,7 @@ ggtitle("Bitterness (IBU) vs. Alcoholic Content (IBV)") + ylab("XXXXX") + xlab("
 
 # 9. Knock their socks off!  Find one other useful inference from the data that you feel Budweiser may be able to find value in.  You must convince them why it is important and back up your conviction with appropriate statistical evidence. 
 
-# ** We use the same analysis above but by Beer Type, this will allow us to advise Budweiser on the Type, IBU, ABV of a new beer to release to compete with the growing market. ** #
+# ** We use the same analysis above but by Beer Type, this will allow us to advise Budweiser on the Beer Type, IBU, ABV BY STATE of a new beer to release to compete with the growing market in all of their regions. We could also split this into regions instead of all the way down into state. A large company like Bud wouldn't do things on the state level but the Regional level. ** #
 
 ```{r}
 ```
