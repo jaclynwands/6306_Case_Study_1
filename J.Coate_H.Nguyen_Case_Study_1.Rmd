@@ -8,6 +8,8 @@ output: html_document
 #Introduction
 # a.	The introduction needs to be written as if you are presenting the work to the CEO and CFO of Budweiser (your client) and that they only have had one class in statistics.  If it sounds like a student presentation, that is not acceptable.  You may assume that the CEO and CFO gave you the data and gave you the directive to report any interesting finding that you may uncover through your analysis.
 
+## **I have done some research and would like to take the tactic of presenting the growth of microbreweries and sales in states starting to threaten Budweiser's market share. So we are going to do an analysis on the data we have to recommend the new beers to start selling in those areas to compete with the booming microbrewery business in the United States. ** ##
+
 # b.	Briefly explain the purpose of the code. The explanations should appear as a sentence or two before or after the code chunk. Even though you will not be hiding the code chunks (so that I can see the code), you need to assume that the client can’t see them.
 
 # c.	Use R to code answers concerning the seven questions below.
