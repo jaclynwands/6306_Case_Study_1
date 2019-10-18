@@ -17,6 +17,8 @@ output: html_document
 library(tidyverse)
 library(ggthemes)
 library(dplyr)
+install.packages("highcharter")
+library(highcharter)
 ```
 
 
