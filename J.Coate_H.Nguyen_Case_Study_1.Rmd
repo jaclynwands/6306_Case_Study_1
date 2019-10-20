@@ -86,12 +86,21 @@ glimpse(breweryGeo)
 str(breweryGeo)
 breweryGeo
 
-hcmap("countries/us/us-all", data = breweryGeo, value = "Breweries",
+colBreweries <- hcmap("countries/us/us-all", data = breweryGeo, value = "Breweries",
       joinBy = c("hc-a2", "code"),
       name = "Number of Breweries",
       dataLabels = list(enabled = TRUE, format = '{point.name}'),
       borderColor = "#FAFAFA", borderWidth = 0.1,
       tooltip = list())
+      
+hc_colorAxis(colBreweries, min = 1,
+            max = 50,
+            #type = 'logarithmic',
+            minColor = '#f1ccc7',
+            maxColor = '#a83b2a',
+            lineColor = 'black',
+            lineWidth = .5
+            )
 ```
 
 
@@ -198,7 +207,7 @@ brew.beerABV$State <- factor(brew.beerABV$State, levels = brew.beerABV$State)
 brew.beerABV %>% ggplot(mapping = aes(x=State, y=MedABV))  +
   geom_bar(stat = "identity") +
   geom_col(aes(fill = MedABV)) + 
-  scale_fill_gradient(low = "pink", high = "dark red") +
+  scale_fill_gradient(low = "light green", high = "dark green") +
   theme_excel_new() + 
   theme(legend.position="none", axis.text.x = element_text(angle=65, vjust=0.1)) +
   ggtitle("Median ABV by State") + ylab("ABV") + xlab("State") 
@@ -211,7 +220,7 @@ brew.beerABV$code <- brew.beerABV$State
 
 brew.beerABV
 nrow(brew.beerABV)
-hcmap("countries/us/us-all", data = brew.beerABV, value = "ABVper",
+colorABV <- hcmap("countries/us/us-all", data = brew.beerABV, value = "ABVper",
       joinBy = c("hc-a2", "code"), name = "ABV",
       dataLabels = list(enabled = TRUE, format = '{point.name}'),
       borderColor = "#FAFAFA", borderWidth = 0.1,
@@ -219,6 +228,15 @@ hcmap("countries/us/us-all", data = brew.beerABV, value = "ABVper",
       #colorAxis(
       #color_stops(n= 51)
       )
+
+hc_colorAxis(colorABV, min = 3,
+            max = 7,
+            #type = 'logarithmic',
+            minColor = '#e5ffe5',
+            maxColor = '#003400',
+            lineColor = 'black',
+            lineWidth = .5
+            )
 ```
 
 
@@ -255,7 +273,7 @@ brew.beerIBU$State <- factor(brew.beerIBU$State, levels = brew.beerIBU$State)
 brew.beerIBU %>% ggplot(mapping = aes(x=State, y=MedIBU)) +
   geom_bar(stat = "identity") +
   geom_col(aes(fill = MedIBU)) + 
-  scale_fill_gradient(low = "pink", high = "dark red") +
+  scale_fill_gradient(low = "light blue", high = "dark blue") +
   theme_excel_new() +
   theme(legend.position="none", axis.text.x = element_text(angle=65, vjust=0.6)) +
   ggtitle("Median IBU by State") + ylab("IBU") + xlab("State")
@@ -276,11 +294,20 @@ breweryGeo <- data.frame(table(breweries$State))
 colnames(breweryGeo) <- c("code", "Breweries")
 
 brew.beerIBU
-hcmap("countries/us/us-all", data = brew.beerIBU, value = "MedIBU",
+colorIBU <- hcmap("countries/us/us-all", data = brew.beerIBU, value = "MedIBU",
       joinBy = c("hc-a2", "code"), name = "IBU",
       dataLabels = list(enabled = TRUE, format = '{point.name}'),
       borderColor = "#FAFAFA", borderWidth = 0.1,
       tooltip = list(valueDecimals = 1)) 
+      
+hc_colorAxis(colorIBU, min = 18,
+            max = 62,
+            #type = 'logarithmic',
+            minColor = '#ffffff',
+            maxColor = '#000080',
+            lineColor = 'black',
+            lineWidth = .5
+            )
 ```
 
 
@@ -288,7 +315,6 @@ hcmap("countries/us/us-all", data = brew.beerIBU, value = "MedIBU",
 # 5a. Which state has the maximum alcoholic (ABV) beer? 
 
 ## Below we have listed the higest median ABV.
-### This is not the answer to the question. He asked for the highest ABV not the highest median ABV. ###
 #```{r}
 #y_maxABV <- max(MedianABV[,2])
 #y_maxABV
@@ -297,8 +323,6 @@ hcmap("countries/us/us-all", data = brew.beerIBU, value = "MedIBU",
 #```
 
 
-## Jaclyn's code on this question
-## Below we have listed the max ABV.
 ## Below we have listed the max ABV.
 ```{r}
 brew.beer
@@ -312,18 +336,26 @@ maxABV
 # Create key column for geo map to reference
 maxABV$code <- maxABV$State
 
-hcmap("countries/us/us-all", data = maxABV, value = "ABVper",
+colorMaxABV <- hcmap("countries/us/us-all", data = maxABV, value = "ABVper",
       joinBy = c("hc-a2", "code"), name = "ABV",
       dataLabels = list(enabled = TRUE, format = '{point.name}'),
       borderColor = "#FAFAFA", borderWidth = 0.1,
-      tooltip = list(valueDecimals = 1, valueSuffix = "%")) 
+      tooltip = list(valueDecimals = 1, valueSuffix = "%"))
+
+hc_colorAxis(colorMaxABV, min = 3,
+            max = 7,
+            #type = 'logarithmic',
+            minColor = '#003400',
+            maxColor = '#003400',
+            lineColor = 'black',
+            lineWidth = .5
+            )
 ```
 ### The state with the highest ABV is Colorado at 12.8%.
 
 # 5b. Which state has the most bitter (IBU) beer?
 
 ## Below we have listed the higest median ABV.
-### This is not the answer to the question. He asked for the highest IBU, not the highest median IBU ###
 #```{r}
 #y_maxIBU <- max(MedianIBU[,2])
 #y_maxIBU
@@ -341,11 +373,20 @@ maxIBU
 # Create key column for geo map to reference
 maxIBU$code <- maxIBU$State
 
-hcmap("countries/us/us-all", data = maxIBU, value = "IBU",
+colorMaxIBU <- hcmap("countries/us/us-all", data = maxIBU, value = "IBU",
       joinBy = c("hc-a2", "code"), name = "ABV",
       dataLabels = list(enabled = TRUE, format = '{point.name}'),
       borderColor = "#FAFAFA", borderWidth = 0.1,
       tooltip = list(valueDecimals = 1)) 
+      
+hc_colorAxis(colorMaxIBU, min = 18,
+            max = 62,
+            #type = 'logarithmic',
+            minColor = '#ffffff',
+            maxColor = '#000080',
+            lineColor = 'black',
+            lineWidth = .5
+            )
 ```
 ### The sate with the highest IBU is Oregon at 138.
 
@@ -361,7 +402,7 @@ hcmap("countries/us/us-all", data = maxIBU, value = "IBU",
 ```{r}
 summary(MedianABV)
 MedianABV %>% ggplot(mapping = aes(y = medABV)) +
-  geom_boxplot(fill = "dark red", color = "black") +
+  geom_boxplot(fill = "dark green", color = "black") +
   theme_excel_new() +
   theme(axis.title.x=element_blank(),
         axis.text.x=element_blank(),
@@ -373,7 +414,7 @@ MedianABV %>% ggplot(mapping = aes(y = medABV)) +
 ```{r}
 summary(MedianIBU)
 MedianIBU %>% ggplot(mapping = aes(y = medIBU)) +
-  geom_boxplot(fill = "dark red", color = "black") +
+  geom_boxplot(fill = "dark blue", color = "black") +
   theme_excel_new() +
   theme(axis.title.x=element_blank(),
         axis.text.x=element_blank(),
