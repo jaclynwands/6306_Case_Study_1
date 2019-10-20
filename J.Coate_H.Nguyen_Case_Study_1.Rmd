@@ -422,8 +422,8 @@ ggtitle("Bitterness (IBU) vs. Alcoholic Content (IBV)") + ylab("IBU") + xlab("AB
 brew.beer
 brew.beer %>% ggplot(mapping = aes(x=IBU, y=ABV, color=State)) +
   geom_point() + 
-  theme(legend.position="none") +
   theme_excel_new() +
+  theme(legend.position="none") +
 ggtitle("Bitterness (IBU) vs. Alcoholic Content (IBV)") + ylab("IBU") + xlab("ABV")
 ```
 
