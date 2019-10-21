@@ -49,13 +49,8 @@ beers <- beers %>% dplyr::rename(Name_Beer = Name)
 brew.beer <- full_join(breweries, beers, by = "Brew_ID")
 ```
 
-```{r NAs}
-#summarise_all(brew.beer, funs(sum(is.na(.))))
-```
-
 ```{r Create Median ABV Data Set}
 brew.beer.cleanABV <- brew.beer %>% filter(!is.na(ABV))
-MedianABV <- brew.beer.cleanABV %>% group_by(State) %>% summarise(medABV = median(c(ABV)))
 ```
 
 ```{r Group median ABV by State}
@@ -91,6 +86,11 @@ brew.beerABV %>% ggplot(mapping = aes(x=State, y=MedABV))  +
   theme_excel_new() + 
   theme(legend.position="none", axis.text.x = element_text(angle=65, vjust=0.1)) +
   ggtitle("Median ABV by State") + ylab("ABV") + xlab("State") 
+```
+
+```{r TRYING HCHART FOR COLUMNS GRAPHS}
+hchart(brew.beerABV$State, type = "column")
+hchart(brew.beerABV, "column", hcaes(x = State, y = MedABV))
 ```
 
 ```{r Create key column for geo map to reference}
@@ -158,7 +158,9 @@ hc_colorAxis(colorMaxABV, min = 3,
 - 75% of the ABV falls between 5.5% - 5.8%
 - Higher than Budweiser's 4.2%
 ```{r Boxplot of Median ABV distribution, fig.width = 7, fig.height = 5}
+MedianABV <- brew.beer.cleanABV %>% group_by(State) %>% summarise(medABV = median(c(ABV)))
 #summary(MedianABV)
+
 MedianABV %>% ggplot(mapping = aes(y = medABV)) +
   geom_boxplot(fill = "dark green", color = "black") +
   theme_excel_new() +
@@ -166,237 +168,4 @@ MedianABV %>% ggplot(mapping = aes(y = medABV)) +
         axis.text.x=element_blank(),
         axis.ticks.x=element_blank()) +
   ggtitle("Median ABV Summary Statistics") + ylab("Median ABV") + xlab("")
-```
-
-
-
-#Huy
-
-
-```{r Create Median IBU Data Set}
-
-brew.beer.cleanIBU <- brew.beer %>% filter(!is.na(IBU))
-
-MedianIBU <- brew.beer.cleanIBU %>% group_by(State) %>% summarise(medIBU = median(c(IBU)))
-
-```
-
-
-
-```{r Group median IBU by State}
-
-brew.beerIBU <- aggregate(brew.beer.cleanABV$IBU, by=list(brew.beer.cleanIBU$State), FUN = median)
-
-#glimpse(brew.beerIBU)
-
-```
-
-
-
-```{r Label Columns}
-
-colnames(brew.beerIBU) <- c("State", "MedIBU")
-
-#glimpse(brew.beerIBU)
-
-```
-
-
-
-```{r Turn IBU into percent which is standard format for IBU}
-
-brew.beerIBU <- mutate(brew.beerIBU, IBUper = MedIBU * 100)
-
-#glimpse(brew.beerIBU)
-
-```
-
-
-
-```{r Sort data for column graph}
-
-brew.beerIBU <- brew.beerIBU[order(brew.beerIBU$MedIBU),]
-
-```
-
-
-
-```{r Retain sorted order in the Plot}
-
-brew.beerIBU$State <- factor(brew.beerIBU$State, levels = brew.beerIBU$State)
-
-```
-
-
-
-# Alcohol by Volume (IBU) Analysis
-
-## Median IBU by State
-
-```{r geom_bar chart of median IBU by State}
-
-brew.beerIBU %>% ggplot(mapping = aes(x=State, y=MedIBU))  +
-  
-  geom_bar(stat = "identity", fill = "dark green") +
-  
-  #geom_col(aes(fill = MedIBU)) + 
-  
-  #scale_fill_gradient(low = "light green", high = "dark green") +
-  
-  theme_excel_new() + 
-  
-  theme(legend.position="none", axis.text.x = element_text(angle=65, vjust=0.1)) +
-  
-  ggtitle("Median IBU by State") + ylab("IBU") + xlab("State") 
-
-```
-
-
-
-```{r Create key column for geo map to reference}
-
-brew.beerIBU$code <- brew.beerIBU$State
-
-
-
-#glimpse(brew.beerIBU)
-
-#summary(brew.beerIBU)
-
-#nrow(brew.beerIBU)
-
-```
-
-
-
-## Median ABV by State
-
-```{r hc geo map of Median ABV by State}
-
-colorABV <- hcmap("countries/us/us-all", data = brew.beerABV, value = "ABVper",
-                  
-                  joinBy = c("hc-a2", "code"), name = "ABV",
-                  
-                  dataLabels = list(enabled = TRUE, format = '{point.name}'),
-                  
-                  borderColor = "#FAFAFA", borderWidth = 0.1,
-                  
-                  tooltip = list(valueDecimals = 2, valueSuffix = "%")
-                  
-)
-
-
-
-hc_colorAxis(colorABV, min = 3,
-             
-             max = 7,
-             
-             #type = 'logarithmic',
-             
-             minColor = '#ffffff',
-
-maxColor = '#003400',
-
-lineColor = 'black',
-
-lineWidth = .5
-
-)
-
-```
-
-
-
-```{r Max IBU by State}
-
-#glimpse(brew.beer)
-
-maxIBU <- data.frame(brew.beer[which.max(brew.beer$IBU),])
-
-#maxABV
-
-```
-
-
-
-```{r IBU into percent which is normal format for IBU}
-
-maxIBU <- mutate(maxIBU, IBUper = IBU * 100)
-
-#maxABV
-
-```
-
-
-
-```{r key column for geo map to reference}
-
-maxIBU$code <- maxIBU$State
-
-```
-
-
-
-## Highest ABV
-
-### Oregon at 138
-
-```{r Geo map of Oregon, fig.width = 7, fig.height = 5}
-
-colorMaxIBU <- hcmap("countries/us/us-all", data = maxIBU, value = "IBUper",
-                     
-                     joinBy = c("hc-a2", "code"), name = "IBU",
-                     
-                     dataLabels = list(enabled = TRUE, format = '{point.name}'),
-                     
-                     borderColor = "#FAFAFA", borderWidth = 0.1,
-                     
-                     tooltip = list(valueDecimals = 1, valueSuffix = "%"))
-
-
-
-hc_colorAxis(colorMaxIBU, min = 3,
-             
-             max = 7,
-             
-             #type = 'logarithmic',
-             
-             minColor = '#003400',
-             
-             maxColor = '#003400',
-             
-             lineColor = 'black',
-             
-             lineWidth = .5
-             
-)
-
-```
-
-
-
-## ABV Distribution
-
-- 75% of the ABV falls between 30 - 43
-
-- Higher than Budweiser's 7
-
-```{r Boxplot of Median IBU distribution, fig.width = 7, fig.height = 5}
-
-#summary(MedianIBU)
-
-MedianIBU %>% ggplot(mapping = aes(y = medIBU)) +
-
-  geom_boxplot(fill = "dark green", color = "black") +
-
-  theme_excel_new() +
-
-  theme(axis.title.x=element_blank(),
-
-        axis.text.x=element_blank(),
-
-        axis.ticks.x=element_blank()) +
-
-  ggtitle("Median IBU Summary Statistics") + ylab("Median IBU") + xlab("")
-
 ```
