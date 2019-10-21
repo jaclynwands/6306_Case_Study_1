@@ -469,3 +469,11 @@ hchart(brew.beerABVper, "scatter", hcaes(x = IBU, y = ABVper, group = Region)) %
   hc_legend(enabled = FALSE) %>%
   hc_title(text = "Bitterness (IBU) vs. Alcoholic Content (IBU)")
 ```
+
+# Next Week
+## Findings
+- ABV, IBU, and Style Analysis by Region
+- Official Reommendations
+
+# Thank You
+## Questions?
