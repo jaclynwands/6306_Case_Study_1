@@ -1,0 +1,72 @@
+---
+title: "ABV vs IBU Analysis"
+author: "Jaclyn Ann Coate & Huy Hoang Nguyen"
+date: "`r Sys.Date()`"
+output: 
+  revealjs::revealjs_presentation:
+    transition: slide
+    theme: simple
+    highlight: pygments
+    center: true
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+```
+
+```{r Library set up}
+library(tidyverse)
+library(ggthemes)
+library(dplyr)
+library(highcharter)
+library(ggmap)
+library(ggExtra)
+library(treemapify)
+library(maps)
+library(naniar)
+library(knitr)
+library(revealjs)
+```
+
+```{r Create data sets for reference in this file}
+breweries <- read.csv("https://raw.githubusercontent.com/BivinSadler/MDS-6306-Doing-Data-Science-Fall-2019/master/Unit%208%20and%209%20Case%20Study%201/Breweries.csv", header = TRUE, strip.white=TRUE)
+
+beers <- read.csv("https://raw.githubusercontent.com/BivinSadler/MDS-6306-Doing-Data-Science-Fall-2019/master/Unit%208%20and%209%20Case%20Study%201/Beers.csv", header = TRUE)
+#str(beers)
+#glimpse(beers)
+
+beers <-  beers %>% dplyr::rename( Brew_ID = Brewery_id)
+#glimpse(beers)
+
+breweries <- breweries %>% dplyr::rename(Name_Brew = Name)  
+beers <- beers %>% dplyr::rename(Name_Beer = Name)
+
+#glimpse(breweries)
+#glimpse(beers)
+
+brew.beer <- full_join(breweries, beers, by = "Brew_ID")
+```
+
+# The ABV and IBU correlation
+## ABV v IBU
+- Positive correlation
+```{r Scatter plot with densigram}
+#brew.beer
+ggMarginal(brew.beer %>% ggplot(mapping = aes(x=IBU, y=ABV)) +
+  geom_point() + 
+  geom_smooth(method = 'lm') +
+  theme_excel_new() +
+ggtitle("Bitterness (IBU) vs. Alcoholic Content (IBV)") + ylab("IBU") + xlab("ABV"), type = "densigram", fill = "blue")
+```
+
+## ABV v IBU
+- Positive correlation
+- No confirmed causation
+```{r Scatter plot of IBU vs ABV By State, fig.width = 7, fig.height = 5}
+#brew.beer
+hchart(brew.beer, "scatter", hcaes(x = IBU, y = ABV, group = State)) %>%
+  hc_legend(enabled = FALSE) %>%
+  hc_title(text = "Bitterness (IBU) vs. Alcoholic Content (IBV)")
+```
