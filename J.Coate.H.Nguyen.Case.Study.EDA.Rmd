@@ -164,7 +164,7 @@ brew.beerABV$State <- factor(brew.beerABV$State, levels = brew.beerABV$State)
 # Alcohol by Volume (ABV) Analysis
 ## Median ABV by State
 ```{r ABV: geom_bar chart of median ABV by State}
-brew.beerABV %>% ggplot(mapping = aes(x=State, y=MedABV))  +
+brew.beerABV %>% ggplot(mapping = aes(x=State, y=ABVper))  +
   geom_bar(stat = "identity", fill = "dark green") +
   theme_excel_new() + 
   theme(legend.position="none", axis.text.x = element_text(angle=65, vjust=0.1)) +
@@ -237,15 +237,16 @@ hc_colorAxis(colorMaxABV, min = 3,
 - Higher than Budweiser's 4.2%
 ```{r ABV: Boxplot of Median ABV distribution, fig.width = 7, fig.height = 5}
 MedianABV <- brew.beer.cleanABV %>% group_by(State) %>% summarise(medABV = median(c(ABV)))
+MedABVper <- mutate(MedianABV, ABVper = medABV * 100)
 #summary(MedianABV)
 
-MedianABV %>% ggplot(mapping = aes(y = medABV)) +
+MedABVper %>% ggplot(mapping = aes(y = ABVper)) +
   geom_boxplot(fill = "dark green", color = "black") +
   theme_excel_new() +
   theme(axis.title.x=element_blank(),
         axis.text.x=element_blank(),
         axis.ticks.x=element_blank()) +
-  ggtitle("Median ABV Summary Statistics") + ylab("Median ABV") + xlab("")
+  ggtitle("Median ABV Distribution") + ylab("Median ABV") + xlab("ABV")
 ```
 
 
@@ -365,7 +366,7 @@ MedianIBU %>% ggplot(mapping = aes(y = medIBU)) +
   theme(axis.title.x=element_blank(),
         axis.text.x=element_blank(),
         axis.ticks.x=element_blank()) +
-  ggtitle("Median IBU Summary Statistics") + ylab("Median IBU") + xlab("")
+  ggtitle("Median IBU Distribution") + ylab("Median IBU") + xlab("")
 ```
 
 # ABV and IBU Correlation
@@ -374,7 +375,10 @@ MedianIBU %>% ggplot(mapping = aes(y = medIBU)) +
 - No confirmed causation
 ```{r Scatter plot with densigram, fig.width = 10, fig.height = 5}
 #brew.beer
-ggMarginal(brew.beer %>% ggplot(mapping = aes(x=IBU, y=ABV)) +
+brew.beerABVper <- mutate(brew.beer, ABVper = ABV * 100)
+#glimpse(brew.beerABVper)
+
+ggMarginal(brew.beerABVper %>% ggplot(mapping = aes(x=IBU, y=ABVper)) +
   geom_point() + 
   geom_smooth(method = 'lm') +
   theme_excel_new() +
@@ -383,8 +387,8 @@ ggtitle("Bitterness (IBU) vs. Alcoholic Content (IBV)") + ylab("IBU") + xlab("AB
 
 ## ABV v IBU by State
 ```{r Scatter plot of IBU vs ABV By State}
-#brew.beer
-hchart(brew.beer, "scatter", hcaes(x = IBU, y = ABV, group = State)) %>%
+#glimpse(brew.beerABVper)
+hchart(brew.beerABVper, "scatter", hcaes(x = IBU, y = ABVper, group = State)) %>%
   hc_legend(enabled = FALSE) %>%
   hc_title(text = "Bitterness (IBU) vs. Alcoholic Content (IBV)")
 ```
