@@ -6,3 +6,4 @@ This presentations is dependent on the below packages:
 - ggmap
 - ggExtra
 - treemapify
+- revealjs
