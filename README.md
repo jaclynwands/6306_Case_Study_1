@@ -7,3 +7,4 @@ This presentations is dependent on the below packages:
 - ggExtra
 - treemapify
 - revealjs
+- treemap
