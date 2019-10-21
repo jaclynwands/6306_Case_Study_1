@@ -1,0 +1,58 @@
+# 8. Budweiser would also like to investigate the difference with respect to IBU and ABV between IPAs (India Pale Ales) and other types of Ale (any beer with "Ale" in its name other than IPA).  You decide to use KNN clustering to investigate this relationship.  Provide statistical evidence one way or the other. You can of course assume your audience is comfortable with percentages . KNN is very easy to understand.  
+
+
+```{r}
+
+
+library(class)
+library(caret)
+
+#Create new data frame without NA values on ABV and IBU
+brew.beer.cleanABVIBU <- brew.beer %>% filter(!is.na(ABV) &!is.na(IBU))
+view(brew.beer.cleanABVIBU)
+
+
+# Create 2 dataframes  - IPA and Ales and regroup them
+# We observe that IPA and Ale appear in Name_Beer and Style
+Ales.beer <- cbind(brew.beer.cleanABVIBU, type='Ales', stringsAsFactors=F) %>% filter(
+  (grepl('\\bale\\b', Style, ignore.case=T) | grepl('\\bale\\b', Name_Beer, ignore.case=T))
+
+IPA.beer <- cbind(brew.beer.cleanABVIBU, type='IPA', stringsAsFactors=F) %>% filter(grepl('\\bIPA\\b', Style, ignore.case=T) | grepl('\\bIPA\\b', Name_Beer, ignore.case=T))
+
+IPA.Ales <- union(Ales.beer, IPA.beer)
+Ales$type <- as.factor(IPA.Ales$type)
+
+#KNN model
+set.seed(100)
+splitPerc = .7
+iterations = 500
+numks =100 
+masterAcc = matrix(nrow = iterations, ncol = numks)
+
+
+for(j in 1:iterations) {
+  accs = data.frame(accuracy = numeric(numks), k = numeric(numks))
+  trainIndices = sample(1:dim(IPA.Ales)[1],round(splitPerc * dim(IPA.Ales)[1]))
+  train = IPA.Ales[trainIndices,]
+  test = IPA.Ales[-trainIndices,]
+  for(i in 1:numks) {
+    classifications = knn(train[,c('IBU','ABV')],test[,c('IBU','ABV')],as.factor(train$type), prob = TRUE, k = i)
+    table(as.factor(test$type),classifications)
+    CM = confusionMatrix(table(as.factor(test$type),classifications))
+    masterAcc[j,i] = CM$overall[1]
+  }
+}
+
+
+
+MeanAcc = colMeans(masterAcc)
+
+plot(seq(1,numks,1),MeanAcc, type = "l")
+k <- which.max(MeanAcc)
+#The best value of k is 5 
+
+classifications = knn(train[,c('IBU','ABV')],test[,c('IBU','ABV')],train$type, prob = TRUE, k)
+table(test$type,classifications)
+confusionMatrix(table(test$type,classifications))
+
+
