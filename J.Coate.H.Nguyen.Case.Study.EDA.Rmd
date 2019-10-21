@@ -1,6 +1,6 @@
 ---
-title: "EDA Presentation"
-author: "Jaclyn Ann Coate & Huy Hoang Nguyen"
+title: "Budweiser: Brewery & Beer EDA"
+author: "Jaclyn Coate & Huy Hoang Nguyen"
 date: "`r Sys.Date()`"
 output: 
   revealjs::revealjs_presentation:
@@ -8,24 +8,25 @@ output:
     theme: simple
     highlight: pygments
     center: true
+    css: styles.css
+    includes:
+    #  in_header: background.html
+    #  in_header: header.html
+    self_contained: false
+    reveal_plugins: ["chalkboard"]
+    reveal_options:
+      chalkboard:
+        theme: whiteboard
+        toggleNotesButton: false
 ---
 
-```{r setup, include = FALSE}
+```{r setup, include = FALSE, echo=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 knitr::opts_chunk$set(warning = FALSE)
 knitr::opts_chunk$set(message = FALSE)
-knitr::opts_knit$set(root.dir = "..")
+knitr::opts_knit$set(root.dir = "/Users/Jaco/Desktop/SMU/DS_6306_Doing_Data_Science/Unit_8_9_CaseStudy1")
 knitr::include_graphics("/Users/Jaco/Desktop/SMU/DS_6306_Doing_Data_Science/Unit_8_9_CaseStudy1")
 ```
-
-# Contributors
-## Huy Hoang Nguyen
-- Data Cruncher
-- Hype Crew
-
-## Jaclyn Ann Coate
-- Architect
-- Visualization Lover
 
 ```{r Prepare the environment}
 library(tidyverse)
@@ -39,9 +40,19 @@ library(maps)
 library(naniar)
 library(knitr)
 library(revealjs)
+library(htmltools)
 ```
 
-# Review
+# Contributors
+## Huy Hoang Nguyen
+- Data Cruncher
+- Hype Crew
+
+## Jaclyn Coate
+- Architect
+- Visualization Lover
+
+# Overview
 ## Data
 - We utilized R for our data crunching an analysis
 - We choose to do analyses on ABV and IBU on separate data sets
