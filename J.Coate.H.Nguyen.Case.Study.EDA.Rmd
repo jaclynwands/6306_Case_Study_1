@@ -24,8 +24,8 @@ output:
 knitr::opts_chunk$set(echo = FALSE)
 knitr::opts_chunk$set(warning = FALSE)
 knitr::opts_chunk$set(message = FALSE)
-knitr::opts_knit$set(root.dir = "/Users/Jaco/Desktop/SMU/DS_6306_Doing_Data_Science/Unit_8_9_CaseStudy1")
-knitr::include_graphics("/Users/Jaco/Desktop/SMU/DS_6306_Doing_Data_Science/Unit_8_9_CaseStudy1")
+#knitr::opts_knit$set(root.dir = "/Users/Jaco/Desktop/SMU/DS_6306_Doing_Data_Science/Unit_8_9_CaseStudy1")
+#knitr::include_graphics("/Users/Jaco/Desktop/SMU/DS_6306_Doing_Data_Science/Unit_8_9_CaseStudy1")
 ```
 
 ```{r Prepare the environment}
