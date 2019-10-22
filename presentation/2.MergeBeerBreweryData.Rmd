@@ -1,0 +1,69 @@
+---
+title: "Data Merge Review"
+author: "Jaclyn Ann Coate & Huy Hoang Nguyen"
+date: "`r Sys.Date()`"
+output: 
+  revealjs::revealjs_presentation:
+    transition: slide
+    theme: simple
+    highlight: pygments
+    center: true
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+```
+
+```{r Prepare the environment}
+library(tidyverse)
+library(ggthemes)
+library(dplyr)
+library(highcharter)
+library(ggmap)
+library(ggExtra)
+library(treemapify)
+library(maps)
+library(naniar)
+library(knitr)
+library(revealjs)
+```
+
+```{r Create breweries data set for this file reference}
+breweries <- read.csv("https://raw.githubusercontent.com/BivinSadler/MDS-6306-Doing-Data-Science-Fall-2019/master/Unit%208%20and%209%20Case%20Study%201/Breweries.csv", header = TRUE, strip.white=TRUE)
+```
+
+## Data Review
+- We utilized R for our data crunching an analysis
+- We choose to do analyses on ABV and IBU on separate data sets
+- We are excited to show you our findings!
+```{r Merge beer data with the breweries data. Print the first 6 observations and the last six observations to check the merged file.(RMD only, this does not need to be included in the presentation or the deck.)}
+beers <- read.csv("https://raw.githubusercontent.com/BivinSadler/MDS-6306-Doing-Data-Science-Fall-2019/master/Unit%208%20and%209%20Case%20Study%201/Beers.csv", header = TRUE)
+#str(beers)
+#glimpse(beers)
+```
+
+```{r We obvserve that our key value "Brew_ID" from our breweries data is named "Brewery_id". In order to have these column names match and make tables easier to merge we remane the column in the beer data set.}
+beers <-  beers %>% dplyr::rename( Brew_ID = Brewery_id)
+#glimpse(beers)
+```
+
+```{r We observe that two "name" columns exist between the data sets. So we assign them unique column names by data set.}
+breweries <- breweries %>% dplyr::rename(Name_Brew = Name)  
+beers <- beers %>% dplyr::rename(Name_Beer = Name)
+
+#glimpse(breweries)
+#glimpse(beers)
+```
+
+```{r We complete a full_join of both data frames to loose minimum amount of data for review.}
+brew.beer <- full_join(breweries, beers, by = "Brew_ID")
+#str(brew.beer)
+#glimpse(brew.beer)
+```
+
+```{r We print first 6 and last 6 rows of merged data set below.}
+#brew.beer %>% head(6)
+#brew.beer %>% tail(6)
+```

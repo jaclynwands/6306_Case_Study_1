@@ -1,0 +1,86 @@
+---
+title: "Breweries by State"
+author: "Jaclyn Ann Coate & Huy Hoang Nguyen"
+date: "`r Sys.Date()`"
+output: 
+  revealjs::revealjs_presentation:
+    transition: slide
+    theme: simple
+    highlight: pygments
+    center: true
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+```
+
+```{r Prepare the environment}
+library(tidyverse)
+library(ggthemes)
+library(dplyr)
+library(highcharter)
+library(ggmap)
+library(ggExtra)
+library(treemapify)
+library(maps)
+library(naniar)
+library(knitr)
+library(revealjs)
+```
+
+```{r Import Brewery data into R}
+breweries <- read.csv("https://raw.githubusercontent.com/BivinSadler/MDS-6306-Doing-Data-Science-Fall-2019/master/Unit%208%20and%209%20Case%20Study%201/Breweries.csv", header = TRUE, strip.white=TRUE)
+#str(breweries)
+#nrow(breweries)
+#summary(breweries)
+#glimpse(breweries)
+```
+
+```{r Import map data from highcharter}
+mapdata <- get_data_from_map(download_map_data("countries/us/us-all"))
+#glimpse(mapdata)
+```
+
+```{r Table and data frame number of breweries by state, rename column to code for join statement}
+#glimpse(breweries)
+breweryGeo <- data.frame(table(breweries$State))
+colnames(breweryGeo) <- c("code", "Breweries")
+breweryGeo$StateNam <- state.name[match(breweryGeo$code, state.abb)]
+#glimpse(breweryGeo)
+```
+
+```{r Drop NAs and categorize the columns corrently}
+breweryGeo <- filter(breweryGeo, !is.na(code))
+#glimpse(breweryGeo)
+
+breweryGeo$Breweries <- as.numeric(breweryGeo$Breweries)
+breweryGeo$State <- as.character(breweryGeo$code)
+#glimpse(breweryGeo)
+
+#glimpse(breweryGeo)
+#str(breweryGeo)
+```
+
+# Brewery Geo Distribution
+## Breweries by State
+```{r}
+colBreweries <- hcmap("countries/us/us-all", data = breweryGeo, value = "Breweries",
+      joinBy = c("hc-a2", "code"),
+      title = "Breweries by State",
+      name = "Number of Breweries",
+      dataLabels = list(enabled = TRUE, format = '{point.name}'),
+      borderColor = "#FAFAFA", borderWidth = 0.1,
+      tooltip = list()
+      )
+
+hc_colorAxis(colBreweries, min = 1,
+            max = 50,
+            #type = 'logarithmic',
+            minColor = '#f1ccc7',
+            maxColor = '#a83b2a',
+            lineColor = 'black',
+            lineWidth = .5
+            )
+```

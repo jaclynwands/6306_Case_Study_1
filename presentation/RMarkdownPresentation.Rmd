@@ -1,0 +1,82 @@
+library(knitr)
+---
+title: "Key for HTML"
+author: "Jaclyn Ann Coate"
+date: "10/20/2019"
+output:
+    ioslides_presentation:
+      df_print: paged
+#output:
+#  powerpoint_presentation:
+#    df_print: paged
+    
+#output:
+#  reveal_js::revealjs_presentation:
+#   df_print: paged
+#   theme:moon
+#   transition: zoom
+---
+
+```{r]
+
+```
+
+# section header
+## subsection header
+### subsubsection header
+
+*italic*
+
+**bold**
+
+***bold italic***
+
+- bullet
+
+-bullet
+  -bullet
+
+* bullet
+  * bullet
+    * bullet
+    
+- Chapter 4 is all about presetnations
+#"https://bookdown.org/yihui/rmarkdown/"
+
+
+
+
+
+
+
+
+```{r set up, include = FALSE}
+#knitr options
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(warn = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+# set root directory to project root
+
+knitr::opts_knit$set(root.dir = "..")
+
+```
+
+```{r}
+
+# ignores root.dir, have to type the full relative path
+#knitr::include_graphics(#home/david/project/images/)
+
+#need to have a root directory from where everything is going ot pull from then use the location of that image of on your computer
+```
+
+
+
+
+
+
+
+
+
+
+
+

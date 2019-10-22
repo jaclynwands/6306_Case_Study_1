@@ -1,0 +1,171 @@
+---
+title: "Alcohol by Volume (ABV) Analysis"
+author: "Jaclyn Ann Coate & Huy Hoang Nguyen"
+date: "`r Sys.Date()`"
+output: 
+  revealjs::revealjs_presentation:
+    transition: slide
+    theme: simple
+    highlight: pygments
+    center: true
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+```
+
+```{r Library set up}
+library(tidyverse)
+library(ggthemes)
+library(dplyr)
+library(highcharter)
+library(ggmap)
+library(ggExtra)
+library(treemapify)
+library(maps)
+library(naniar)
+library(knitr)
+library(revealjs)
+```
+
+```{r Create data sets for reference in this file}
+breweries <- read.csv("https://raw.githubusercontent.com/BivinSadler/MDS-6306-Doing-Data-Science-Fall-2019/master/Unit%208%20and%209%20Case%20Study%201/Breweries.csv", header = TRUE, strip.white=TRUE)
+
+beers <- read.csv("https://raw.githubusercontent.com/BivinSadler/MDS-6306-Doing-Data-Science-Fall-2019/master/Unit%208%20and%209%20Case%20Study%201/Beers.csv", header = TRUE)
+#str(beers)
+#glimpse(beers)
+
+beers <-  beers %>% dplyr::rename( Brew_ID = Brewery_id)
+#glimpse(beers)
+
+breweries <- breweries %>% dplyr::rename(Name_Brew = Name)  
+beers <- beers %>% dplyr::rename(Name_Beer = Name)
+
+#glimpse(breweries)
+#glimpse(beers)
+
+brew.beer <- full_join(breweries, beers, by = "Brew_ID")
+```
+
+```{r Create Median ABV Data Set}
+brew.beer.cleanABV <- brew.beer %>% filter(!is.na(ABV))
+```
+
+```{r Group median ABV by State}
+brew.beerABV <- aggregate(brew.beer.cleanABV$ABV, by=list(brew.beer.cleanABV$State), FUN = median)
+#glimpse(brew.beerABV)
+```
+
+```{r Label Columns}
+colnames(brew.beerABV) <- c("State", "MedABV")
+#glimpse(brew.beerABV)
+```
+
+```{r Turn ABV into percent which is standard format for ABV}
+brew.beerABV <- mutate(brew.beerABV, ABVper = MedABV * 100)
+#glimpse(brew.beerABV)
+```
+
+```{r Sort data for column graph}
+brew.beerABV <- brew.beerABV[order(brew.beerABV$MedABV),]
+```
+
+```{r Retain sorted order in the Plot}
+brew.beerABV$State <- factor(brew.beerABV$State, levels = brew.beerABV$State)
+```
+
+# Alcohol by Volume (ABV) Analysis
+## Median ABV by State
+```{r geom_bar chart of median ABV by State}
+brew.beerABV %>% ggplot(mapping = aes(x=State, y=MedABV))  +
+  geom_bar(stat = "identity", fill = "dark green") +
+  #geom_col(aes(fill = MedABV)) + 
+  #scale_fill_gradient(low = "light green", high = "dark green") +
+  theme_excel_new() + 
+  theme(legend.position="none", axis.text.x = element_text(angle=65, vjust=0.1)) +
+  ggtitle("Median ABV by State") + ylab("ABV") + xlab("State") 
+```
+
+```{r TRYING HCHART FOR COLUMNS GRAPHS}
+hchart(brew.beerABV$State, type = "column")
+hchart(brew.beerABV, "column", hcaes(x = State, y = MedABV))
+```
+
+```{r Create key column for geo map to reference}
+brew.beerABV$code <- brew.beerABV$State
+
+#glimpse(brew.beerABV)
+#summary(brew.beerABV)
+#nrow(brew.beerABV)
+```
+
+## Median ABV by State
+```{r hc geo map of Median ABV by State}
+colorABV <- hcmap("countries/us/us-all", data = brew.beerABV, value = "ABVper",
+      joinBy = c("hc-a2", "code"), name = "ABV",
+      dataLabels = list(enabled = TRUE, format = '{point.name}'),
+      borderColor = "#FAFAFA", borderWidth = 0.1,
+      tooltip = list(valueDecimals = 2, valueSuffix = "%")
+      )
+
+hc_colorAxis(colorABV, min = 3,
+            max = 7,
+            #type = 'logarithmic',
+            minColor = '#ffffff',
+            maxColor = '#003400',
+            lineColor = 'black',
+            lineWidth = .5
+            )
+```
+
+```{r Max ABV by State}
+#glimpse(brew.beer)
+maxABV <- data.frame(brew.beer[which.max(brew.beer$ABV),])
+#maxABV
+```
+
+```{r ABV into percent which is normal format for ABV}
+maxABV <- mutate(maxABV, ABVper = ABV * 100)
+#maxABV
+```
+
+```{r key column for geo map to reference}
+maxABV$code <- maxABV$State
+```
+
+## Highest ABV
+### Colorado at 12.8%
+```{r Geo map of Colorado, fig.width = 7, fig.height = 5}
+colorMaxABV <- hcmap("countries/us/us-all", data = maxABV, value = "ABVper",
+      joinBy = c("hc-a2", "code"), name = "ABV",
+      dataLabels = list(enabled = TRUE, format = '{point.name}'),
+      borderColor = "#FAFAFA", borderWidth = 0.1,
+      tooltip = list(valueDecimals = 1, valueSuffix = "%"))
+
+hc_colorAxis(colorMaxABV, min = 3,
+            max = 7,
+            #type = 'logarithmic',
+            minColor = '#003400',
+            maxColor = '#003400',
+            lineColor = 'black',
+            lineWidth = .5
+            )
+```
+
+## ABV Distribution
+- 75% of the ABV falls between 5.5% - 5.8%
+- Higher than Budweiser's 4.2%
+```{r Boxplot of Median ABV distribution, fig.width = 7, fig.height = 5}
+MedianABV <- brew.beer.cleanABV %>% group_by(State) %>% summarise(medABV = median(c(ABV)))
+#summary(MedianABV)
+
+MedianABV %>% ggplot(mapping = aes(y = medABV)) +
+  geom_boxplot(fill = "dark green", color = "black") +
+  theme_excel_new() +
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) +
+  ggtitle("Median ABV Summary Statistics") + ylab("Median ABV") + xlab("")
+```

@@ -1,0 +1,418 @@
+---
+title: '6306 DDS: Case Study 1'
+author: "Jaclyn Ann Coate & Huy Hoang Nguyen"
+date: "10/7/2019"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+# Introduction
+## As data scientists for Budweiser we were thrilled to help decide on the type of beer that will compete with the booming microbrewery growth in the United States. During this discussion we will be presenting an analysis of beer bitterness (or IBU) and alcohol by volume (ABV) by state. This will lead into our recommendations for new beer releases by regional market in the US. We expect Budweiser to be able to compete and excel in this rapidly expanding sector. #
+
+# Below we are prepping our environment with different libraries we will need to complete our analysis. 
+```{r}
+library(tidyverse)
+library(ggthemes)
+library(dplyr)
+#install.packages("highcharter")
+library(highcharter)
+#install.packages("ggmap")
+library(ggmap)
+#install.packages("ggExtra")
+library(ggExtra)
+#install.packages("treemapify")
+library(treemapify)
+library(maps)
+library(naniar)
+library(knitr)
+```
+
+# 1. How many breweries are present in each state?
+## Import Brewery data into R
+```{r}
+breweries <- read.csv("https://raw.githubusercontent.com/BivinSadler/MDS-6306-Doing-Data-Science-Fall-2019/master/Unit%208%20and%209%20Case%20Study%201/Breweries.csv", header = TRUE, strip.white=TRUE)
+str(breweries)
+nrow(breweries)
+summary(breweries)
+glimpse(breweries)
+```
+## Import map data from highcharter
+```{r}
+mapdata <- get_data_from_map(download_map_data("countries/us/us-all"))
+glimpse(mapdata)
+```
+## Table and data frame number of breweries by state, rename column to code for join statement
+```{r}
+glimpse(breweries)
+breweryGeo <- data.frame(table(breweries$State))
+colnames(breweryGeo) <- c("code", "Breweries")
+breweryGeo$StateNam <- state.name[match(breweryGeo$code, state.abb)]
+glimpse(breweryGeo)
+```
+## Drop NAs and categorize the columns corrently
+```{r}
+breweryGeo <- filter(breweryGeo, !is.na(code))
+glimpse(breweryGeo)
+
+breweryGeo$Breweries <- as.numeric(breweryGeo$Breweries)
+breweryGeo$State <- as.character(breweryGeo$code)
+glimpse(breweryGeo)
+
+glimpse(breweryGeo)
+str(breweryGeo)
+```
+# Breweries graphed by State in interactive Geo Map
+```{r}
+colBreweries <- hcmap("countries/us/us-all", data = breweryGeo, value = "Breweries",
+      joinBy = c("hc-a2", "code"),
+      title = "Breweries by State",
+      name = "Number of Breweries",
+      dataLabels = list(enabled = TRUE, format = '{point.name}'),
+      borderColor = "#FAFAFA", borderWidth = 0.1,
+      tooltip = list()
+      )
+
+hc_colorAxis(colBreweries, min = 1,
+            max = 50,
+            #type = 'logarithmic',
+            minColor = '#f1ccc7',
+            maxColor = '#a83b2a',
+            lineColor = 'black',
+            lineWidth = .5
+            )
+```
+
+
+# 2. Merge beer data with the breweries data. Print the first 6 observations and the last six observations to check the merged file.(RMD only, this does not need to be included in the presentation or the deck.)
+## Import Beer data into R
+```{r}
+beers <- read.csv("https://raw.githubusercontent.com/BivinSadler/MDS-6306-Doing-Data-Science-Fall-2019/master/Unit%208%20and%209%20Case%20Study%201/Beers.csv", header = TRUE)
+str(beers)
+glimpse(beers)
+```
+## We obvserve that our key value "Brew_ID" from our breweries data is named "Brewery_id". In order to have these column names match and make tables easier to merge we remane the column in the beer data set.
+```{r}
+beers <-  beers %>% dplyr::rename( Brew_ID = Brewery_id)
+glimpse(beers)
+```
+## We observe that two 'name' columns exist between the data sets. So we assign them unique column names by data set.
+```{r}
+breweries <- breweries %>% dplyr::rename(Name_Brew = Name)  
+beers <- beers %>% dplyr::rename(Name_Beer = Name)
+
+glimpse(breweries)
+glimpse(beers)
+```
+## We complete a full_join of both data frames to loose minimum amount of data for review.
+```{r}
+brew.beer <- full_join(breweries, beers, by = "Brew_ID")
+str(brew.beer)
+glimpse(brew.beer)
+```
+## We print first 6 and last 6 rows of merged data set below.
+```{r}
+brew.beer %>% head(6)
+brew.beer %>% tail(6)
+```
+
+
+# 3. Address the missing values in each column.
+## We review the data and we see ABV contains 62 NAs and IBU contains 1005 NAs. We are keeping those data frames separate to prevent more data loss.
+```{r}
+brew.beer %>% summarise_all(funs(sum(is.na(.))))
+```
+
+# Alcohol by Volume ABV Analysis
+
+## Median ABV
+```{r}
+brew.beer.cleanABV <- brew.beer %>% filter(!is.na(ABV))
+MedianABV <- brew.beer.cleanABV %>% group_by(State) %>% summarise(medABV = median(c(ABV)))
+```
+### Create Median Data Set
+```{r}
+brew.beer.cleanABV <- brew.beer %>% filter(!is.na(ABV))
+```
+### Group median ABV by State
+```{r}
+brew.beerABV <- aggregate(brew.beer.cleanABV$ABV, by=list(brew.beer.cleanABV$State), FUN = median)
+brew.beerABV
+```
+### Label Columns
+```{r}
+colnames(brew.beerABV) <- c("State", "MedABV")
+brew.beerABV
+```
+### Turn ABV into percent which is normal format for ABV##
+```{r}
+brew.beerABV <- mutate(brew.beerABV, ABVper = MedABV * 100)
+brew.beerABV
+```
+### Sort data for column graph
+```{r}
+brew.beerABV <- brew.beerABV[order(brew.beerABV$MedABV),]
+```
+### Retain sorted order in the Plot
+```{r}
+brew.beerABV$State <- factor(brew.beerABV$State, levels = brew.beerABV$State)
+```
+
+## Median ABV graphed by State in bar chart
+```{r}
+brew.beerABV %>% ggplot(mapping = aes(x=State, y=MedABV))  +
+  geom_bar(stat = "identity") +
+  geom_col(aes(fill = MedABV)) + 
+  scale_fill_gradient(low = "light green", high = "dark green") +
+  theme_excel_new() + 
+  theme(legend.position="none", axis.text.x = element_text(angle=65, vjust=0.1)) +
+  ggtitle("Median ABV by State") + ylab("ABV") + xlab("State") 
+```
+
+## Median ABV graphed by State in interactive Geo Map
+```{r}
+# Create key column for geo map to reference
+brew.beerABV$code <- brew.beerABV$State
+
+brew.beerABV
+nrow(brew.beerABV)
+
+colorABV <- hcmap("countries/us/us-all", data = brew.beerABV, value = "ABVper",
+      joinBy = c("hc-a2", "code"), name = "ABV",
+      dataLabels = list(enabled = TRUE, format = '{point.name}'),
+      borderColor = "#FAFAFA", borderWidth = 0.1,
+      tooltip = list(valueDecimals = 2, valueSuffix = "%")
+      )
+
+hc_colorAxis(colorABV, min = 3,
+            max = 7,
+            #type = 'logarithmic',
+            minColor = '#e5ffe5',
+            maxColor = '#003400',
+            lineColor = 'black',
+            lineWidth = .5
+            )
+```
+
+## Below we have listed the max ABV.
+```{r}
+brew.beer
+maxABV <- data.frame(brew.beer[which.max(brew.beer$ABV),])
+maxABV
+
+#Turn ABV into percent which is normal format for ABV##
+maxABV <- mutate(maxABV, ABVper = ABV * 100)
+maxABV
+
+# Create key column for geo map to reference
+maxABV$code <- maxABV$State
+
+colorMaxABV <- hcmap("countries/us/us-all", data = maxABV, value = "ABVper",
+      joinBy = c("hc-a2", "code"), name = "ABV",
+      dataLabels = list(enabled = TRUE, format = '{point.name}'),
+      borderColor = "#FAFAFA", borderWidth = 0.1,
+      tooltip = list(valueDecimals = 1, valueSuffix = "%"))
+
+hc_colorAxis(colorMaxABV, min = 3,
+            max = 7,
+            #type = 'logarithmic',
+            minColor = '#003400',
+            maxColor = '#003400',
+            lineColor = 'black',
+            lineWidth = .5
+            )
+```
+### The state with the highest ABV is Colorado at 12.8%.
+
+### From the summary statistics we can see the median ABV has a pretty small distribution. The majority of the beers that are produced fall between 5.5% - 5.8%. This is slightly higher than the mass produced Budweiser products of 4.2%. Whenever local consumers are given an option they are likely to choose a microbrew that contains a slightly higher ABV than your traditional products. For this reason we will actually be recommending new Budweiser releases by region and of a different ABV than what Budweiser is used to.
+```{r}
+summary(MedianABV)
+MedianABV %>% ggplot(mapping = aes(y = medABV)) +
+  geom_boxplot(fill = "dark green", color = "black") +
+  theme_excel_new() +
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) +
+  ggtitle("Median ABV Summary Statistics") + ylab("Median ABV") + xlab("")
+```
+
+
+
+
+
+# Bitterness (IBU) Analysis 
+
+## Median IBU
+```{r}
+brew.beer.cleanIBU <- brew.beer %>% filter(!is.na(IBU))
+MedianIBU <- brew.beer.cleanIBU %>% group_by(State) %>% summarise(medIBU = median(c(IBU)))
+```
+
+### Create Median Data Set
+```{r}
+brew.beer.cleanIBU <- brew.beer %>% filter(!is.na(IBU))
+```
+
+### Group median ABV by State
+```{r}
+brew.beerIBU <- aggregate(brew.beer.cleanIBU$IBU, by=list(brew.beer.cleanIBU$State), FUN = median)
+brew.beerIBU
+```
+### Label Columns
+```{r}
+colnames(brew.beerIBU) <- c("State", "MedIBU")
+brew.beerIBU
+```
+### Sort
+```{r}
+brew.beerIBU <- brew.beerIBU[order(brew.beerIBU$MedIBU),]
+```
+### Retain order in the Plot
+```{r}
+brew.beerIBU$State <- factor(brew.beerIBU$State, levels = brew.beerIBU$State)
+```
+
+### Median IBU graphed by State in bar chart
+```{r}
+brew.beerIBU %>% ggplot(mapping = aes(x=State, y=MedIBU)) +
+  geom_bar(stat = "identity") +
+  geom_col(aes(fill = MedIBU)) + 
+  scale_fill_gradient(low = "light blue", high = "dark blue") +
+  theme_excel_new() +
+  theme(legend.position="none", axis.text.x = element_text(angle=65, vjust=0.6)) +
+  ggtitle("Median IBU by State") + ylab("IBU") + xlab("State")
+```
+
+### Median IBU graphed by State in interactive Geo Map
+#### Create key column for geo map to reference
+```{r}
+brew.beerIBU$code <- brew.beerIBU$State
+```
+
+#### Adding South Dakota 0 so it renders on GEO map even with a 0 value
+```{r}
+sd <- data.frame("SD", 0, "SD")
+colnames(sd) <- c("State", "MedIBU", "code")
+sd
+brew.beerIBU <- rbind(brew.beerIBU, sd)
+```
+
+```{r}
+breweryGeo <- data.frame(table(breweries$State))
+colnames(breweryGeo) <- c("code", "Breweries")
+
+brew.beerIBU
+colorIBU <- hcmap("countries/us/us-all", data = brew.beerIBU, value = "MedIBU",
+      joinBy = c("hc-a2", "code"), name = "IBU",
+      dataLabels = list(enabled = TRUE, format = '{point.name}'),
+      borderColor = "#FAFAFA", borderWidth = 0.1,
+      tooltip = list(valueDecimals = 1)) 
+
+hc_colorAxis(colorIBU, min = 18,
+            max = 62,
+            #type = 'logarithmic',
+            minColor = '#ffffff',
+            maxColor = '#000080',
+            lineColor = 'black',
+            lineWidth = .5
+            )
+```
+
+## Below we have listed the max IBU.
+```{r}
+brew.beer
+maxIBU <- data.frame(brew.beer[which.max(brew.beer$IBU),])
+maxIBU
+
+# Create key column for geo map to reference
+maxIBU$code <- maxIBU$State
+
+colorMaxIBU <- hcmap("countries/us/us-all", data = maxIBU, value = "IBU",
+      joinBy = c("hc-a2", "code"), name = "ABV",
+      dataLabels = list(enabled = TRUE, format = '{point.name}'),
+      borderColor = "#FAFAFA", borderWidth = 0.1,
+      tooltip = list(valueDecimals = 1))
+
+hc_colorAxis(colorMaxIBU, min = 18,
+            max = 62,
+            #type = 'logarithmic',
+            minColor = '#ffffff',
+            maxColor = '#000080',
+            lineColor = 'black',
+            lineWidth = .5
+            )
+```
+### The sate with the highest IBU is Oregon at 138.
+
+## Also doing a summary on IBU
+```{r}
+summary(MedianIBU)
+MedianIBU %>% ggplot(mapping = aes(y = medIBU)) +
+  geom_boxplot(fill = "dark blue", color = "black") +
+  theme_excel_new() +
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) +
+  ggtitle("Median ABV Summary Statistics") + ylab("Median ABV") + xlab("")
+```
+
+
+# 7a. Is there an apparent relationship between the bitterness of the beer and its alcoholic content? 
+## There does seem to be a relationsihp between IBU and ABV. In order to investigate further we will look for correlation.
+## I have given three ways to dipict this via a scatterplot. We need to choose 2. I want to use a scatter plot with violin and a scatter plot by state
+
+## 7b. Scatter plot with densigram
+```{r}
+brew.beer
+ggMarginal(brew.beer %>% ggplot(mapping = aes(x=IBU, y=ABV)) +
+  geom_point() + 
+  geom_smooth(method = 'lm') +
+  theme_excel_new() +
+ggtitle("Bitterness (IBU) vs. Alcoholic Content (IBV)") + ylab("IBU") + xlab("ABV"), type = "densigram", fill = "blue")
+```
+
+# 7b. Scatter plot of IBU vs ABV By State
+```{r}
+brew.beer
+brew.beer %>% ggplot(mapping = aes(x=IBU, y=ABV, color=State)) +
+  geom_point() + 
+  theme_excel_new() +
+  theme(legend.position="none") +
+ggtitle("Bitterness (IBU) vs. Alcoholic Content (IBV)") + ylab("IBU") + xlab("ABV")
+```
+
+# 7c. Make your best judgment of a relationship and EXPLAIN your answer.
+
+## Based on the above scatter plot and correlation line we can see a positive linear relationship. This tells us that as the alcohol content (ABV), in general, so does the bitterness (IBU). This linear correlation means there is a relationship but does not mean that we can provide causation. Therefore, in general we can confirm that when the ABV of a beer rises so will it's bitterness. However, one does not necessarily cause the other.
+
+
+# 8. Budweiser would also like to investigate the difference with respect to IBU and ABV between IPAs (India Pale Ales) and other types of Ale (any beer with “Ale” in its name other than IPA).  You decide to use KNN clustering to investigate this relationship.  Provide statistical evidence one way or the other. You can of course assume your audience is comfortable with percentages … KNN is very easy to understand.  
+
+## ADDED: The text of case study question 8 has been edited slightly (the deliverables are still the same) in an updated version of the document on github  (from knn - clustering to classification): the goal is to classify between IPA and just Ale using IBU and ABV attributes.
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+
+# 9. Knock their socks off!  Find one other useful inference from the data that you feel Budweiser may be able to find value in.  You must convince them why it is important and back up your conviction with appropriate statistical evidence. 
+
+## ** After we have completed the above analysis. We have divied the country into regoinal markets and recommend what beer budweiser should start producing and distributing in each of those regions in order to start competing with the growing microbrewery market. Here we will include microbrewery growth metrics as well as our findings on how to compete with them. ** ##
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
