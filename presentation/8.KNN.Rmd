@@ -1,14 +1,16 @@
 ---
-title: "8. KNN"
+  title: "8. KNN"
 author: "Jaclyn Ann Coate"
 date: "10/22/2019"
 output: html_document
 ---
-
-```{r}
+  
+  ```{r}
 library(class)
 library(caret)
 library(tidyverse)
+library(VIM)
+library(mice)
 ```
 
 ```{r Create a working data set for this problem}
@@ -21,20 +23,51 @@ beers <-  beers %>% dplyr::rename( Brew_ID = Brewery_id)
 breweries <- breweries %>% dplyr::rename(Name_Brew = Name)  
 beers <- beers %>% dplyr::rename(Name_Beer = Name)
 
-brew.beer <- full_join(breweries, beers, by = "Brew_ID")
+brew.beer <- full_join(breweries, beers, by = "Beer_ID")
 str(brew.beer)
 glimpse(brew.beer)
 ```
 
-```{r Create new data frame without NA values on ABV and IBU}
-brew.beer.cleanABVIBU <- brew.beer %>% filter(!is.na(ABV) &!is.na(IBU))
-view(brew.beer.cleanABVIBU)
+```{r Quick classification of missing data}
+pMiss <- function(x){sum(is.na(x))/length(x)*100}
+apply(brew.beer,2,pMiss)
+apply(brew.beer,1,pMiss)
 ```
 
-```{r Create 2 dataframes  - IPA and Ales and regroup them.}
-Ales.beer <- cbind(brew.beer.cleanABVIBU, type='Ales', stringsAsFactors=F) %>% filter(grepl('\\bale\\b', Style, ignore.case=T) | grepl('\\bale\\b', Name_Beer, ignore.case=T))
+```{r Helpful visual representation}
+aggr_plot <- aggr(brew.beer, col=c('navyblue','red'), numbers=TRUE, sortVars=TRUE, labels=names(brew.beer), cex.axis=.7, gap=3, ylab=c("Histogram of missing data","Pattern"))
 
-IPA.beer <- cbind(brew.beer.cleanABVIBU, type='IPA', stringsAsFactors=F) %>% filter(grepl('\\bIPA\\b', Style, ignore.case=T) | grepl('\\bIPA\\b', Name_Beer, ignore.case=T))
+marginplot(brew.beer[,c("ABV","IBU")])
+
+md.pattern(brew.beer)
+```
+
+
+```{r  Imputing the missing data}
+brew.beer.impute <- mice(brew.beer[,c("Beer_ID","ABV","IBU")],m=5,maxit=50,meth='pmm',seed=100)
+summary(brew.beer.impute)
+
+brew.beer.impute$imp$ABV #check the imputed data ABV
+brew.beer.impute$imp$IBU # check the imputed data IBU
+
+brew.beer.draft <- complete(brew.beer.impute,1)  # Complete impute dataset
+view(brew.beer.draft)
+```
+
+```{r Create new dataset after imputing the missing data}
+brew.beer.draft <- brew.beer.draft %>% dplyr::rename(ABV.New = ABV)
+brew.beer.draft <- brew.beer.draft %>% dplyr::rename(IBU.New = IBU)
+
+brew.beer.New <- full_join(brew.beer, brew.beer.draft, by = "Beer_ID")
+view(brew.beer.New)
+```
+
+
+
+```{r Create 2 dataframes  - IPA and Ales and regroup them.}
+Ales.beer <- cbind(brew.beer.New, type='Ales', stringsAsFactors=F) %>% filter(grepl('\\bale\\b', Style, ignore.case=T))
+
+IPA.beer <- cbind(brew.beer.New, type='IPA', stringsAsFactors=F) %>% filter(grepl('\\bIPA\\b', Style, ignore.case=T))
 
 IPA.Ales <- union(Ales.beer, IPA.beer)
 
@@ -53,7 +86,7 @@ for(j in 1:iterations) {
   train = IPA.Ales[trainIndices,]
   test = IPA.Ales[-trainIndices,]
   for(i in 1:numks) {
-    classifications = knn(train[,c('IBU','ABV')],test[,c('IBU','ABV')],as.factor(train$type), prob = TRUE, k = i)
+    classifications = knn(train[,c('IBU.New','ABV.New')],test[,c('IBU.New','ABV.New')],as.factor(train$type), prob = TRUE, k = i)
     table(as.factor(test$type),classifications)
     CM = confusionMatrix(table(as.factor(test$type),classifications))
     masterAcc[j,i] = CM$overall[1]
@@ -64,12 +97,7 @@ plot(seq(1,numks,1),MeanAcc, type = "l")
 k <- which.max(MeanAcc)
 ```
 
-```{r The best value of k is 6 for %Acurracy}
-classifications = knn(train[,c('IBU','ABV')],test[,c('IBU','ABV')],train$type, prob = TRUE, k)
+```{r The best value of k is  for %Acurracy}
+classifications = knn(train[,c('IBU.New','ABV.New')],test[,c('IBU.New','ABV.New')],train$type, prob = TRUE, k)
 table(test$type,classifications)
 confusionMatrix(table(test$type,classifications))
-```
-
-
-
-
