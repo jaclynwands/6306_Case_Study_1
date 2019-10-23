@@ -17,6 +17,14 @@ knitr::opts_chunk$set(message = FALSE)
 knitr::opts_knit$set(root.dir = "..")
 knitr::include_graphics("/Users/Jaco/Desktop/SMU/DS_6306_Doing_Data_Science/Unit_8_9_CaseStudy1")
 ```
+```{r Introduction}
+#As data scientists for Budweiser we were thrilled to help decide on the type of beer that will compete with the booming microbrewery growth in the United States. This review will containg an analysis of beer bitterness (or IBU) and alcohol by volume (or ABV) by state. This will lead into our recommendations for new beer releases by regional market in the US. We expect Budweiser to be able to compete and excel in this rapidly expanding sector.
+```
+
+# Budweiser an InBev Company {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
+## Budweiser {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
+- Microbrewery Analysis
+- Recommended beer releases for microbrewery market entry
 
 # Contributors
 ## Huy Hoang Nguyen
