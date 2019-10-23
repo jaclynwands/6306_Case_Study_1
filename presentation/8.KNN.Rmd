@@ -97,7 +97,7 @@ plot(seq(1,numks,1),MeanAcc, type = "l")
 k <- which.max(MeanAcc)
 ```
 
-```{r The best value of k is  for %Acurracy}
+```{r The best value of k is 11 for %Acurracy}
 classifications = knn(train[,c('IBU.New','ABV.New')],test[,c('IBU.New','ABV.New')],train$type, prob = TRUE, k)
 table(test$type,classifications)
 confusionMatrix(table(test$type,classifications))
