@@ -23,7 +23,7 @@ beers <-  beers %>% dplyr::rename( Brew_ID = Brewery_id)
 breweries <- breweries %>% dplyr::rename(Name_Brew = Name)  
 beers <- beers %>% dplyr::rename(Name_Beer = Name)
 
-brew.beer <- full_join(breweries, beers, by = "Beer_ID")
+brew.beer <- full_join(breweries, beers, by = "Brew_ID")
 str(brew.beer)
 glimpse(brew.beer)
 ```
