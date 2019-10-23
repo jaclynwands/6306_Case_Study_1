@@ -1,0 +1,107 @@
+---
+title: "8. KNN"
+author: "Jaclyn Ann Coate"
+date: "10/22/2019"
+output: html_document
+---
+
+#Budweiser would also like to investigate the difference with respect to IBU and ABV between IPAs (India Pale Ales) and other types of Ale (any beer with “Ale” in its name other than IPA).  You decide to use KNN classification to investigate this relationship.  Provide statistical evidence one way or the other. You can of course assume your audience is comfortable with percentages … KNN is very easy to understand conceptually.
+
+#In addition, while you have decided to use KNN to investigate this relationship (KNN is required) you may also feel free to supplement your response to this question with any other methods or techniques you have learned.  Creativity and alternative solutions are always encouraged.  
+
+#The text of case study question 8 has been edited slightly (the deliverables are still the same) in an updated version of the document on github  (from knn - clustering to classification): the goal is to classify between IPA and just Ale using IBU and ABV attributes.
+
+
+```{r}
+library(class)
+library(caret)
+library(tidyverse)
+library(VIM)
+library(lattice)
+library(mice)
+```
+
+```{r Create a working data set for this problem}
+breweries <- read.csv("https://raw.githubusercontent.com/BivinSadler/MDS-6306-Doing-Data-Science-Fall-2019/master/Unit%208%20and%209%20Case%20Study%201/Breweries.csv", header = TRUE, strip.white=TRUE)
+#breweries
+
+beers <- read.csv("https://raw.githubusercontent.com/BivinSadler/MDS-6306-Doing-Data-Science-Fall-2019/master/Unit%208%20and%209%20Case%20Study%201/Beers.csv", header = TRUE)
+#beers
+
+beers <-  beers %>% dplyr::rename( Brew_ID = Brewery_id)
+#beers
+breweries <- breweries %>% dplyr::rename(Name_Brew = Name)  
+#breweries
+
+beers <- beers %>% dplyr::rename(Name_Beer = Name)
+
+brew.beer <- full_join(breweries, beers, by = "Brew_ID")
+#str(brew.beer)
+#glimpse(brew.beer)
+```
+
+```{r Quick classification of missing data}
+pMiss <- function(x){sum(is.na(x))/length(x)*100}
+apply(brew.beer,2,pMiss)
+apply(brew.beer,1,pMiss)
+```
+
+```{r Helpful visual representation}
+aggr_plot <- aggr(brew.beer, col=c('navyblue','red'), numbers=TRUE, sortVars=TRUE, labels=names(brew.beer), cex.axis=.7, gap=3, ylab=c("Histogram of missing data","Pattern"))
+marginplot(brew.beer[,c("ABV","IBU")])
+md.pattern(brew.beer)
+```
+
+```{r  Imputing the missing data}
+brew.beer.impute <- mice(brew.beer[,c("Beer_ID","ABV","IBU")],m=5,maxit=50,meth='pmm',seed=100)
+#summary(brew.beer.impute)
+brew.beer.impute$imp$ABV #check the imputed data ABV
+brew.beer.impute$imp$IBU # check the imputed data IBU
+brew.beer.draft <- complete(brew.beer.impute,1)  # Complete impute dataset
+#view(brew.beer.draft)
+```
+
+```{r Create new dataset after imputing the missing data}
+brew.beer.draft <- brew.beer.draft %>% dplyr::rename(ABV.New = ABV)
+brew.beer.draft <- brew.beer.draft %>% dplyr::rename(IBU.New = IBU)
+brew.beer.New <- full_join(brew.beer, brew.beer.draft, by = "Beer_ID")
+#view(brew.beer.New)
+#styles <- unique(brew.beer.New$Style)
+#view(styles)
+```
+
+```{r Create 2 dataframes  - IPA and Ales and regroup them.}
+Ales.beer <- cbind(brew.beer.New, type='Ales', stringsAsFactors=F) %>% filter(grepl('\\bale\\b', Style, ignore.case=T))
+IPA.beer <- cbind(brew.beer.New, type='IPA', stringsAsFactors=F) %>% filter(grepl('\\bIPA\\b', Style, ignore.case=T))
+IPA.Ales <- union(Ales.beer, IPA.beer)
+IPA.Ales$type <- as.factor(IPA.Ales$type)
+```
+
+```{r KNN model}
+set.seed(100)
+splitPerc = .7
+iterations = 500
+numks =100 
+masterAcc = matrix(nrow = iterations, ncol = numks)
+for(j in 1:iterations) {
+  accs = data.frame(accuracy = numeric(numks), k = numeric(numks))
+  trainIndices = sample(1:dim(IPA.Ales)[1],round(splitPerc * dim(IPA.Ales)[1]))
+  train = IPA.Ales[trainIndices,]
+  test = IPA.Ales[-trainIndices,]
+  for(i in 1:numks) {
+    classifications = knn(train[,c('IBU.New','ABV.New')],test[,c('IBU.New','ABV.New')],as.factor(train$type), prob = TRUE, k = i)
+    table(as.factor(test$type),classifications)
+    CM = confusionMatrix(table(as.factor(test$type),classifications))
+    masterAcc[j,i] = CM$overall[1]
+  }
+}
+MeanAcc = colMeans(masterAcc)
+plot(seq(1,numks,1),MeanAcc, type = "l")
+k <- which.max(MeanAcc)
+```
+
+```{r The best value of k is 11 for %Acurracy}
+classifications = knn(train[,c('IBU.New','ABV.New')],test[,c('IBU.New','ABV.New')],train$type, prob = TRUE, k)
+table(test$type,classifications)
+confusionMatrix(table(test$type,classifications))
+```
