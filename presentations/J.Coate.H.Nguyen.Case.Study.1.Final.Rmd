@@ -24,7 +24,7 @@ output:
 knitr::opts_chunk$set(echo = FALSE)
 knitr::opts_chunk$set(warning = FALSE)
 knitr::opts_chunk$set(message = FALSE)
-knitr::include_graphics("https://i.ibb.co/M6Yh3pg/In-Bev-Background.png")
+knitr::include_graphics("/Users/Jaco/Desktop/SMU/DS_6306_Doing_Data_Science/Unit_8_9_CaseStudy1/presentations")
 ```
 
 ```{r Prepare the environment}
@@ -45,6 +45,9 @@ library(treemap)
 library(RColorBrewer)
 library(class)
 library(caret)
+library(VIM)
+library(lattice)
+library(mice)
 ```
 
 ```{r Introduction}
@@ -461,9 +464,16 @@ hchart(brew.beerABVper, "scatter", hcaes(x = IBU, y = ABVper, group = Region)) %
 
 # Predict Model {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
 ## KNN Model was produced {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
-- Over 80% confidence
-- XXXXXX 
-- XXXXXX
+
+
+
+
+
+
+
+
+
+
 
 # Beer Styles by Region {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
 ## Top 5 Beer Styles in the Northeast {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}

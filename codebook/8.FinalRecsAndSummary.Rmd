@@ -1,0 +1,60 @@
+---
+title: "Case Study 1: Final Presentation"
+author: "Jaclyn Coate & Huy Hoang Nguyen"
+date: "`r Sys.Date()`"
+output: 
+  revealjs::revealjs_presentation:
+    transition: slide
+    keep_md: true
+    theme: simple
+    highlight: pygments
+    center: true
+    css: styles.css
+    includes:
+      in_header: backgroundsilver.html
+    self_contained: false
+    reveal_plugins: ["chalkboard"]
+    reveal_options:
+      chalkboard:
+        theme: whiteboard
+        toggleNotesButton: false
+---
+
+```{r setup, include = FALSE, echo=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+knitr::include_graphics("/Users/Jaco/Desktop/SMU/DS_6306_Doing_Data_Science/Unit_8_9_CaseStudy1/presentations")
+```
+
+# Final Recommendations and Summary {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
+## New Release Beer Charactersitics {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
+## Styles {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
+- IPA
+- Pale Ale
+- Amber
+- Blonde Ale
+- Double IPA
+- Pale Wheat Ale
+```{r}
+# Above are the recommended special releases to be rotated by region in the US. Through our data analysis it was determined that there was not large differences in the most popular styles by region. Taking advantage of the cost effectiveness of only releasing 6 beers will be crucial. Making sure they are released in different regions will promote scarcity - which will in turn create demand.
+```
+
+## ABV and IBU Ranges {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
+- ABV: 5.8 - 6.0%
+- IBU: 20 - 30
+```{r}
+# Above are the recommended ranges of ABV and IBU for the special release beers.
+```
+
+## In Closing {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
+- Scarcity creates demand
+- Beers tailored by region
+- Competitive ABV and IBU ranges
+```{r}
+# Part of the hype surrounding microbrewery releases in the US is that the beers are not easily attainable. Budweiser can use this to their advantage by having limited releases by region. Only one or two of the redcommended styles at a time. Also making sure that they are only available for a limited time.
+# In our analysis we were able to surface a popular range of ABV and IBU for these new release beers. Breweries are releasing a higher ABV than the standard Budweiser brand. These new release beers will compete with those higher ABV brands.
+# During our IBU review we notcied that IBU is quite higher than the traditional Budweiser brands. For this reason we chose to only recommend a new IBU on th lower side of the range. This is to prevent alienating any of our traditional customers and still allow these new release beers to be palatable for everyone.
+```
+
+# Thank You {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}

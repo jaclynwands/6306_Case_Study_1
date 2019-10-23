@@ -1,9 +1,31 @@
 ---
-title: "8. KNN"
-author: "Jaclyn Ann Coate"
-date: "10/22/2019"
-output: html_document
+title: "KNN"
+author: "Jaclyn Coate & Huy Hoang Nguyen"
+date: "`r Sys.Date()`"
+output: 
+  revealjs::revealjs_presentation:
+    transition: slide
+    keep_md: true
+    theme: simple
+    highlight: pygments
+    center: true
+    css: styles.css
+    includes:
+      in_header: backgroundsilver.html
+    self_contained: false
+    reveal_plugins: ["chalkboard"]
+    reveal_options:
+      chalkboard:
+        theme: whiteboard
+        toggleNotesButton: false
 ---
+
+```{r setup, include = FALSE, echo=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+knitr::include_graphics("/Users/Jaco/Desktop/SMU/DS_6306_Doing_Data_Science/Unit_8_9_CaseStudy1/presentations")
+```
 
 #Budweiser would also like to investigate the difference with respect to IBU and ABV between IPAs (India Pale Ales) and other types of Ale (any beer with “Ale” in its name other than IPA).  You decide to use KNN classification to investigate this relationship.  Provide statistical evidence one way or the other. You can of course assume your audience is comfortable with percentages … KNN is very easy to understand conceptually.
 
@@ -21,7 +43,9 @@ library(lattice)
 library(mice)
 ```
 
-```{r Create a working data set for this problem}
+
+
+```{r Create a working data set for KNN Analysis}
 breweries <- read.csv("https://raw.githubusercontent.com/BivinSadler/MDS-6306-Doing-Data-Science-Fall-2019/master/Unit%208%20and%209%20Case%20Study%201/Breweries.csv", header = TRUE, strip.white=TRUE)
 #breweries
 
@@ -40,15 +64,24 @@ brew.beer <- full_join(breweries, beers, by = "Brew_ID")
 #glimpse(brew.beer)
 ```
 
-```{r Quick classification of missing data}
+```{r Classification of missing data}
 pMiss <- function(x){sum(is.na(x))/length(x)*100}
 apply(brew.beer,2,pMiss)
 apply(brew.beer,1,pMiss)
 ```
 
+# Visualization of Missing Data {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
+## asdf {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
 ```{r Helpful visual representation}
-aggr_plot <- aggr(brew.beer, col=c('navyblue','red'), numbers=TRUE, sortVars=TRUE, labels=names(brew.beer), cex.axis=.7, gap=3, ylab=c("Histogram of missing data","Pattern"))
-marginplot(brew.beer[,c("ABV","IBU")])
+aggr_plot <- invisible(aggr(brew.beer, col=c('navyblue','red'), 
+                  numbers=TRUE, sortVars=TRUE, 
+                  labels=names(brew.beer), 
+                  cex.axis=.7, gap=3, ylab=c("Histogram of Missing Data","Pattern")))
+#marginplot(brew.beer[,c("ABV","IBU")])
+```
+
+## asdf {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
+```{r}
 md.pattern(brew.beer)
 ```
 
@@ -78,30 +111,30 @@ IPA.Ales$type <- as.factor(IPA.Ales$type)
 ```
 
 ```{r KNN model}
-set.seed(100)
-splitPerc = .7
-iterations = 500
-numks =100 
-masterAcc = matrix(nrow = iterations, ncol = numks)
-for(j in 1:iterations) {
-  accs = data.frame(accuracy = numeric(numks), k = numeric(numks))
-  trainIndices = sample(1:dim(IPA.Ales)[1],round(splitPerc * dim(IPA.Ales)[1]))
-  train = IPA.Ales[trainIndices,]
-  test = IPA.Ales[-trainIndices,]
-  for(i in 1:numks) {
-    classifications = knn(train[,c('IBU.New','ABV.New')],test[,c('IBU.New','ABV.New')],as.factor(train$type), prob = TRUE, k = i)
-    table(as.factor(test$type),classifications)
-    CM = confusionMatrix(table(as.factor(test$type),classifications))
-    masterAcc[j,i] = CM$overall[1]
-  }
-}
-MeanAcc = colMeans(masterAcc)
-plot(seq(1,numks,1),MeanAcc, type = "l")
-k <- which.max(MeanAcc)
+#set.seed(100)
+#splitPerc = .7
+#iterations = 500
+#numks =100 
+#masterAcc = matrix(nrow = iterations, ncol = numks)
+#for(j in 1:iterations) {
+#  accs = data.frame(accuracy = numeric(numks), k = numeric(numks))
+#  trainIndices = sample(1:dim(IPA.Ales)[1],round(splitPerc * dim(IPA.Ales)[1]))
+#  train = IPA.Ales[trainIndices,]
+#  test = IPA.Ales[-trainIndices,]
+#  for(i in 1:numks) {
+#    classifications = knn(train[,c('IBU.New','ABV.New')],test[,c('IBU.New','ABV.New')],as.factor(train$type), prob = TRUE, k = i)
+#    table(as.factor(test$type),classifications)
+#    CM = confusionMatrix(table(as.factor(test$type),classifications))
+#    masterAcc[j,i] = CM$overall[1]
+#  }
+#}
+#MeanAcc = colMeans(masterAcc)
+#plot(seq(1,numks,1),MeanAcc, type = "l")
+#k <- which.max(MeanAcc)
 ```
 
 ```{r The best value of k is 11 for %Acurracy}
-classifications = knn(train[,c('IBU.New','ABV.New')],test[,c('IBU.New','ABV.New')],train$type, prob = TRUE, k)
-table(test$type,classifications)
-confusionMatrix(table(test$type,classifications))
+#classifications = knn(train[,c('IBU.New','ABV.New')],test[,c('IBU.New','ABV.New')],train$type, prob = TRUE, k)
+#table(test$type,classifications)
+#confusionMatrix(table(test$type,classifications))
 ```
