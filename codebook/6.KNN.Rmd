@@ -149,7 +149,7 @@ confusionMatrix(table(test$type,classifications))
 - 75% - 82% Confidence Interval
 
 ```{r}
-# In running a 500 interation model we are able to have 77% confidence we could classify comeptitors beers on the market based on their IBU and ABV characteristics. We have obtained a confidence interval of 75%-82% that if we use the 11 closest beers to compare we will categorize the beer correctly if it is missing it's categorization of an IPA versus an Ale.
+# In running a 500 interation model we are able to have 77% confidence we could classify competitors beers on the market based on their IBU and ABV characteristics. We have obtained a confidence interval of 75%-82% that if we use the 11 closest beers to compare we will categorize the beer correctly if it is missing it's categorization of an IPA versus an Ale.
 
 #We would have liked to see above 85% and since we are only seeing 77 we will continue our investigation with the omitted NA data instead of incorporating into our final data for drawing our conclusions.
 ```
