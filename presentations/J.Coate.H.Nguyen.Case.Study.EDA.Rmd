@@ -71,7 +71,7 @@ mapdata <- get_data_from_map(download_map_data("countries/us/us-all"))
 #glimpse(mapdata)
 ```
 
-```{r Table and data frame number of breweries by state, rename column to code for join statement}
+```{r Table and data frame number of breweries by state, reman column to code for join statement}
 #glimpse(breweries)
 breweryGeo <- data.frame(table(breweries$State))
 colnames(breweryGeo) <- c("code", "Breweries")
@@ -119,7 +119,7 @@ beers <- read.csv("https://raw.githubusercontent.com/BivinSadler/MDS-6306-Doing-
 #glimpse(beers)
 ```
 
-```{r We obvserve that our key value "Brew_ID" from our breweries data is named "Brewery_id". In order to have these column names match and make tables easier to merge we remane the column in the beer data set.}
+```{r We observe that our key value "Brew_ID" from our breweries data is named "Brewery_id". In order to have these column names match and make tables easier to merge we rename the column in the beer data set.}
 beers <-  beers %>% dplyr::rename( Brew_ID = Brewery_id)
 #glimpse(beers)
 ```
