@@ -8,7 +8,7 @@ output:
 ---
 
 # Introduction
-## As data scientists for Budweiser we were thrilled to help decide on the type of beer that will compete with the booming microbrewery growth in the United States. During this discussion we will be presenting an analysis of beer bitterness (or IBU) and alcohol by volume (ABV) by state. This will lead into our recommendations for new beer releases by regional market in the US. We expect Budweiser to be able to compete and excel in this rapidly expanding sector. #
+## As data scientists for Budweiser we were thrilled to help to decide on the type of beer that will compete with the booming microbrewery growth in the United States. During this discussion we will be presenting an analysis of beer bitterness (or IBU) and alcohol by volume (ABV) by state. This will lead into our recommendations for new beer releases by regional market in the US. We expect Budweiser to be able to compete and excel in this rapidly expanding sector. #
 
 # Below we are prepping our environment with different libraries we will need to complete our analysis. 
 ```{r}
@@ -91,7 +91,7 @@ beers <- read.csv("https://raw.githubusercontent.com/BivinSadler/MDS-6306-Doing-
 str(beers)
 glimpse(beers)
 ```
-## We obvserve that our key value "Brew_ID" from our breweries data is named "Brewery_id". In order to have these column names match and make tables easier to merge we remane the column in the beer data set.
+## We observe that our key value "Brew_ID" from our breweries data is named "Brewery_id". In order to have these column names match and make tables easier to merge we remane the column in the beer data set.
 ```{r}
 beers <-  beers %>% dplyr::rename( Brew_ID = Brewery_id)
 glimpse(beers)
