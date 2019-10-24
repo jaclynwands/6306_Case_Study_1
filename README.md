@@ -5,7 +5,7 @@ The purpose of this repository is to share our collaborative work in order to co
 
 ## Github Case Study Structure
 * [Final Presentations] - EDA and Final Presenations
-* [Presentations by Section] - individual kittable sections of our final presentation
+* [CodeBook] - contains a codebook for the project
 * [Case Study Requirements] - case study documentation and rubric
 * [Miscellaneous] - miscellaneous files and drafts left over from our learning curve with Git and RStudio
 
@@ -15,6 +15,6 @@ Please contact any of the members below:
  - Huy Nguyen: hnguyen@smu.edu
 
  [Final Presentations]: <https://github.com/JaclynCoate/6306_Case_Study_1/tree/master/presentations/finalpresentations>
- [Presentations by Section]: <https://github.com/JaclynCoate/6306_Case_Study_1/tree/master/presentations/bysection>
+ [CodeBook]: <https://github.com/JaclynCoate/6306_Case_Study_1/tree/master/codebook>
  [Case Study Requirements]: <https://github.com/JaclynCoate/6306_Case_Study_1/tree/master/case_study_req>
  [Miscellaneous]: <https://github.com/JaclynCoate/6306_Case_Study_1/tree/master/Misc>         

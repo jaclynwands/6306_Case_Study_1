@@ -5,6 +5,7 @@ date: "`r Sys.Date()`"
 output: 
   revealjs::revealjs_presentation:
     transition: slide
+    keep_md: true
     theme: simple
     highlight: pygments
     center: true
@@ -34,7 +35,7 @@ library(revealjs)
 breweries <- read.csv("https://raw.githubusercontent.com/BivinSadler/MDS-6306-Doing-Data-Science-Fall-2019/master/Unit%208%20and%209%20Case%20Study%201/Breweries.csv", header = TRUE, strip.white=TRUE)
 ```
 
-## Data Review
+## Data Review {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
 - We utilized R for our data crunching an analysis
 - We choose to do analyses on ABV and IBU on separate data sets
 - We are excited to show you our findings!

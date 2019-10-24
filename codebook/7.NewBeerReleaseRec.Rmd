@@ -5,6 +5,7 @@ date: "`r Sys.Date()`"
 output: 
   revealjs::revealjs_presentation:
     transition: slide
+    keep_md: true
     theme: simple
     highlight: pygments
     center: true
@@ -332,23 +333,3 @@ hchart(bbIBU.cleanmed, "column", hcaes(x = Region, y = MedianIBU)) %>%
   hc_title(text = "Median IBU by Region") %>%
   hc_add_theme(hc_theme_google())
 ```
-
-# Final Recommendations and Summary {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
-## Top Beer Styles in the US {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
-- IPA
-- Pale Ale
-- Amber
-- Blonde Ale
-- Double IPA
-- Pale Wheat Ale
-
-## ABV and IBU Ranges {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
-- ABV: 5.8 - 6.0%
-- IBU: 30 - 40
-
-## In Closing
-- Scarcity creates demand
-- Beers tailored by region
-- Competitive ABV and IBU ranges
-
-# Thank You

@@ -24,15 +24,15 @@ output:
 knitr::opts_chunk$set(echo = FALSE)
 knitr::opts_chunk$set(warning = FALSE)
 knitr::opts_chunk$set(message = FALSE)
-knitr::include_graphics("/Users/Jaco/Desktop/SMU/DS_6306_Doing_Data_Science/Unit_8_9_CaseStudy1/presentations")
 ```
 
-#Budweiser would also like to investigate the difference with respect to IBU and ABV between IPAs (India Pale Ales) and other types of Ale (any beer with “Ale” in its name other than IPA).  You decide to use KNN classification to investigate this relationship.  Provide statistical evidence one way or the other. You can of course assume your audience is comfortable with percentages … KNN is very easy to understand conceptually.
+```{r Question 8}
+# Budweiser would also like to investigate the difference with respect to IBU and ABV between IPAs (India Pale Ales) and other types of Ale (any beer with “Ale” in its name other than IPA).  You decide to use KNN classification to investigate this relationship.  Provide statistical evidence one way or the other. You can of course assume your audience is comfortable with percentages … KNN is very easy to understand conceptually.
 
-#In addition, while you have decided to use KNN to investigate this relationship (KNN is required) you may also feel free to supplement your response to this question with any other methods or techniques you have learned.  Creativity and alternative solutions are always encouraged.  
+## In addition, while you have decided to use KNN to investigate this relationship (KNN is required) you may also feel free to supplement your response to this question with any other methods or techniques you have learned.  Creativity and alternative solutions are always encouraged.  
 
-#The text of case study question 8 has been edited slightly (the deliverables are still the same) in an updated version of the document on github  (from knn - clustering to classification): the goal is to classify between IPA and just Ale using IBU and ABV attributes.
-
+## The text of case study question 8 has been edited slightly (the deliverables are still the same) in an updated version of the document on github  (from knn - clustering to classification): the goal is to classify between IPA and just Ale using IBU and ABV attributes.
+```
 
 ```{r}
 library(class)
@@ -42,8 +42,6 @@ library(VIM)
 library(lattice)
 library(mice)
 ```
-
-
 
 ```{r Create a working data set for KNN Analysis}
 breweries <- read.csv("https://raw.githubusercontent.com/BivinSadler/MDS-6306-Doing-Data-Science-Fall-2019/master/Unit%208%20and%209%20Case%20Study%201/Breweries.csv", header = TRUE, strip.white=TRUE)
@@ -65,22 +63,28 @@ brew.beer <- full_join(breweries, beers, by = "Brew_ID")
 ```
 
 ```{r Classification of missing data}
-pMiss <- function(x){sum(is.na(x))/length(x)*100}
-apply(brew.beer,2,pMiss)
-apply(brew.beer,1,pMiss)
+invisible(pMiss <- function(x){sum(is.na(x))/length(x)*100})
+invisible(apply(brew.beer,2,pMiss))
+invisible(apply(brew.beer,1,pMiss))
 ```
 
 # Visualization of Missing Data {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
-## asdf {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
+## Histogram and Pattern of Missing Data {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
 ```{r Helpful visual representation}
-aggr_plot <- invisible(aggr(brew.beer, col=c('navyblue','red'), 
+aggr_plot <- aggr(brew.beer, col=c('navyblue','red'), 
                   numbers=TRUE, sortVars=TRUE, 
                   labels=names(brew.beer), 
-                  cex.axis=.7, gap=3, ylab=c("Histogram of Missing Data","Pattern")))
+                  cex.axis=.7, gap=3, ylab=c("Histogram of Missing Data","Pattern"))
+
+#brew.beer %>% aggr(col=c('navyblue','red'), 
+#                  numbers=TRUE, sortVars=TRUE, 
+#                  labels=names(brew.beer), 
+#                  cex.axis=.7, gap=3, ylab=c("Histogram of Missing Data","Pattern"))
+
 #marginplot(brew.beer[,c("ABV","IBU")])
 ```
 
-## asdf {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
+## Missing Data Pattern {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
 ```{r}
 md.pattern(brew.beer)
 ```
@@ -111,30 +115,41 @@ IPA.Ales$type <- as.factor(IPA.Ales$type)
 ```
 
 ```{r KNN model}
-#set.seed(100)
-#splitPerc = .7
-#iterations = 500
-#numks =100 
-#masterAcc = matrix(nrow = iterations, ncol = numks)
-#for(j in 1:iterations) {
-#  accs = data.frame(accuracy = numeric(numks), k = numeric(numks))
-#  trainIndices = sample(1:dim(IPA.Ales)[1],round(splitPerc * dim(IPA.Ales)[1]))
-#  train = IPA.Ales[trainIndices,]
-#  test = IPA.Ales[-trainIndices,]
-#  for(i in 1:numks) {
-#    classifications = knn(train[,c('IBU.New','ABV.New')],test[,c('IBU.New','ABV.New')],as.factor(train$type), prob = TRUE, k = i)
-#    table(as.factor(test$type),classifications)
-#    CM = confusionMatrix(table(as.factor(test$type),classifications))
-#    masterAcc[j,i] = CM$overall[1]
-#  }
-#}
-#MeanAcc = colMeans(masterAcc)
-#plot(seq(1,numks,1),MeanAcc, type = "l")
-#k <- which.max(MeanAcc)
+set.seed(5)
+splitPerc = .7
+iterations = 250
+numks = 100 
+masterAcc = matrix(nrow = iterations, ncol = numks)
+for(j in 1:iterations) {
+  accs = data.frame(accuracy = numeric(numks), k = numeric(numks))
+  trainIndices = sample(1:dim(IPA.Ales)[1],round(splitPerc * dim(IPA.Ales)[1]))
+  train = IPA.Ales[trainIndices,]
+  test = IPA.Ales[-trainIndices,]
+  for(i in 1:numks) {
+    classifications = knn(train[,c('IBU.New','ABV.New')],test[,c('IBU.New','ABV.New')],as.factor(train$type), prob = TRUE, k = i)
+    table(as.factor(test$type),classifications)
+    CM = confusionMatrix(table(as.factor(test$type),classifications))
+    masterAcc[j,i] = CM$overall[1]
+  }
+}
+MeanAcc = colMeans(masterAcc)
+plot(seq(1,numks,1),MeanAcc, type = "l")
+k <- which.max(MeanAcc)
 ```
 
 ```{r The best value of k is 11 for %Acurracy}
-#classifications = knn(train[,c('IBU.New','ABV.New')],test[,c('IBU.New','ABV.New')],train$type, prob = TRUE, k)
-#table(test$type,classifications)
-#confusionMatrix(table(test$type,classifications))
+classifications = knn(train[,c('IBU.New','ABV.New')],test[,c('IBU.New','ABV.New')],train$type, prob = TRUE, k)
+table(test$type,classifications)
+confusionMatrix(table(test$type,classifications))
+```
+
+# In Summary
+## Predictor Model Review {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
+- 77% Confidence
+- 75% - 82% Confidence Interval
+
+```{r}
+# In running a 500 interation model we are able to have 77% confidence we could classify comeptitors beers on the market based on their IBU and ABV characteristics. We have obtained a confidence interval of 75%-82% that if we use the 11 closest beers to compare we will categorize the beer correctly if it is missing it's categorization of an IPA versus an Ale.
+
+#We would have liked to see above 85% and since we are only seeing 77 we will continue our investigation with the omitted NA data instead of incorporating into our final data for drawing our conclusions.
 ```

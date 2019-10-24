@@ -27,6 +27,10 @@ knitr::opts_chunk$set(message = FALSE)
 knitr::include_graphics("/Users/Jaco/Desktop/SMU/DS_6306_Doing_Data_Science/Unit_8_9_CaseStudy1/presentations")
 ```
 
+```{r Introduction}
+# As data scientists for Budweiser we were thrilled to help decide on new release beers that will compete with the booming microbrewery growth in the United States. This review will containg an analysis of beer bitterness (or IBU) and alcohol by volume (or ABV) by state. This will lead into our recommendations for new beer releases by regional market in the US. We expect Budweiser to be able to compete and excel in this rapidly expanding sector.
+```
+
 ```{r Prepare the environment}
 library(tidyverse)
 library(ggthemes)
@@ -48,10 +52,6 @@ library(caret)
 library(VIM)
 library(lattice)
 library(mice)
-```
-
-```{r Introduction}
-#As data scientists for Budweiser we were thrilled to help decide on the type of beer that will compete with the booming microbrewery growth in the United States. This review will containg an analysis of beer bitterness (or IBU) and alcohol by volume (or ABV) by state. This will lead into our recommendations for new beer releases by regional market in the US. We expect Budweiser to be able to compete and excel in this rapidly expanding sector.
 ```
 
 # Budweiser an InBev Company {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
@@ -123,7 +123,11 @@ hc_colorAxis(colBreweries, min = 1,
             )
 ```
 
-```{r Question 2. Merge beer data with the breweries data. Print the first 6 observations and the last six observations to check the merged file.}
+```{r}
+# In our above gradient colored geo map we can tell there is a large distribution of breweries throughout the United States. California, Colorado, Michigan, and Oregon are all some of the leaders is breweries in the US. Texas gets an honorable mention and is not close behind.  
+```
+
+```{r Question 2: Merge beer data with the breweries data. Print the first 6 observations and the last six observations to check the merged file.}
 beers <- read.csv("https://raw.githubusercontent.com/BivinSadler/MDS-6306-Doing-Data-Science-Fall-2019/master/Unit%208%20and%209%20Case%20Study%201/Beers.csv", header = TRUE)
 #str(beers)
 #glimpse(beers)
@@ -148,9 +152,108 @@ brew.beer <- full_join(breweries, beers, by = "Brew_ID")
 #glimpse(brew.beer)
 ```
 
-```{r Question 2. We print first 6 and last 6 rows of merged data set below.}
+```{r Question 2: We print first 6 and last 6 rows of merged data set below.}
 #brew.beer %>% head(6)
 #brew.beer %>% tail(6)
+```
+
+
+
+
+# Predict Model {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
+## K Nearest Neighbors Model {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
+```{r Question 8}
+# We have performed a full KNN analysis on our data. In order to do this we have identified, classified, and imputed the missing data in order to keep from loosing over half of our data set after our full join. This has allowed us to have more confidence in our model.
+```
+
+```{r Classification of missing data}
+invisible(pMiss <- function(x){sum(is.na(x))/length(x)*100})
+invisible(apply(brew.beer,2,pMiss))
+invisible(apply(brew.beer,1,pMiss))
+```
+
+## Histogram and Pattern of Missing Data {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
+```{r Helpful visual representation}
+aggr_plot <- aggr(brew.beer, col=c('navyblue','red'), 
+                  numbers=TRUE, sortVars=TRUE, 
+                  labels=names(brew.beer), 
+                  cex.axis=.7, gap=3, ylab=c("Histogram of Missing Data","Pattern"))
+
+#brew.beer %>% aggr(col=c('navyblue','red'), 
+#                  numbers=TRUE, sortVars=TRUE, 
+#                  labels=names(brew.beer), 
+#                  cex.axis=.7, gap=3, ylab=c("Histogram of Missing Data","Pattern"))
+
+#marginplot(brew.beer[,c("ABV","IBU")])
+```
+
+## Missing Data Pattern {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
+```{r}
+md.pattern(brew.beer)
+```
+
+```{r  Imputing the missing data}
+brew.beer.impute <- mice(brew.beer[,c("Beer_ID","ABV","IBU")],m=5,maxit=50,meth='pmm',seed=100)
+#summary(brew.beer.impute)
+brew.beer.impute$imp$ABV #check the imputed data ABV
+brew.beer.impute$imp$IBU # check the imputed data IBU
+brew.beer.draft <- complete(brew.beer.impute,1)  # Complete impute dataset
+#view(brew.beer.draft)
+```
+
+```{r Create new dataset after imputing the missing data}
+brew.beer.draft <- brew.beer.draft %>% dplyr::rename(ABV.New = ABV)
+brew.beer.draft <- brew.beer.draft %>% dplyr::rename(IBU.New = IBU)
+brew.beer.New <- full_join(brew.beer, brew.beer.draft, by = "Beer_ID")
+#view(brew.beer.New)
+#styles <- unique(brew.beer.New$Style)
+#view(styles)
+```
+
+```{r Create 2 dataframes  - IPA and Ales and regroup them.}
+Ales.beer <- cbind(brew.beer.New, type='Ales', stringsAsFactors=F) %>% filter(grepl('\\bale\\b', Style, ignore.case=T))
+IPA.beer <- cbind(brew.beer.New, type='IPA', stringsAsFactors=F) %>% filter(grepl('\\bIPA\\b', Style, ignore.case=T))
+IPA.Ales <- union(Ales.beer, IPA.beer)
+IPA.Ales$type <- as.factor(IPA.Ales$type)
+```
+
+```{r KNN model}
+set.seed(5)
+splitPerc = .7
+iterations = 250
+numks = 100 
+masterAcc = matrix(nrow = iterations, ncol = numks)
+for(j in 1:iterations) {
+  accs = data.frame(accuracy = numeric(numks), k = numeric(numks))
+  trainIndices = sample(1:dim(IPA.Ales)[1],round(splitPerc * dim(IPA.Ales)[1]))
+  train = IPA.Ales[trainIndices,]
+  test = IPA.Ales[-trainIndices,]
+  for(i in 1:numks) {
+    classifications = knn(train[,c('IBU.New','ABV.New')],test[,c('IBU.New','ABV.New')],as.factor(train$type), prob = TRUE, k = i)
+    table(as.factor(test$type),classifications)
+    CM = confusionMatrix(table(as.factor(test$type),classifications))
+    masterAcc[j,i] = CM$overall[1]
+  }
+}
+MeanAcc = colMeans(masterAcc)
+plot(seq(1,numks,1),MeanAcc, type = "l")
+k <- which.max(MeanAcc)
+```
+
+```{r The best value of k is 11 for %Acurracy}
+classifications = knn(train[,c('IBU.New','ABV.New')],test[,c('IBU.New','ABV.New')],train$type, prob = TRUE, k)
+table(test$type,classifications)
+confusionMatrix(table(test$type,classifications))
+```
+
+## Predictor Model Review {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
+- 77% Confidence
+- 75% - 82% Confidence Interval
+
+```{r}
+# In running a 500 interation model we are able to have 77% confidence we could classify comeptitors beers on the market based on their IBU and ABV characteristics. We have obtained a confidence interval of 75%-82% that if we use the 11 closest beers to compare we will categorize the beer correctly if it is missing it's categorization of an IPA versus an Ale.
+
+#We would have liked to see above 85% and since we are only seeing 77 we will continue our investigation with the omitted NA data instead of incorporating into our final data for drawing our conclusions.
 ```
 
 ```{r Question3: ABV: Create Median ABV Data Set}
@@ -216,6 +319,10 @@ hc_colorAxis(colorABV, min = 3,
             )
 ```
 
+```{r}
+# In reviewing our bar chart of Median ABV by state, you can see that there is not a lot of variation in median ABV when comparing state to state. This tells us that while there may be some high ABVs present, normally most breweries fall within a small range. To further show this closeness in Median ABV, we see here our geo map does not have a large range in gradient color. This again shows median ABV does not vary much between states.
+```
+
 ```{r Question 5: ABV: Max ABV by State}
 #glimpse(brew.beer)
 maxABV <- data.frame(brew.beer[which.max(brew.beer$ABV),])
@@ -250,7 +357,7 @@ maxABV$code <- maxABV$State
             )
 ```
 
-## ABV Distribution {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
+## ABV Distribution & Summary{data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
 - 75% of the ABV falls between 5.5% - 5.8%
 - Higher than Budweiser's 4.2%
 ```{r Question 6: ABV: Boxplot of Median ABV distribution, fig.width = 7, fig.height = 5}
@@ -265,6 +372,10 @@ MedABVper %>% ggplot(mapping = aes(y = ABVper)) +
         axis.text.x=element_blank(),
         axis.ticks.x=element_blank()) +
   ggtitle("Median ABV Distribution") + ylab("Median ABV") + xlab("ABV")
+```
+
+```{r}
+# In reviewing this boxplot we can see our Median ABV distribution is small. The majority of the beers (75%) that are produced fall between 5.5% - 5.8%.  This is slightly higher than the mass-produced Budweiser products of 4.2%. Whenever local consumers are given an option, they are likely to choose a microbrew that contains a slightly higher ABV than our traditional products. For this reason, we will be recommending new Budweiser releases by region and of a different ABV than what Budweiser is used to.
 ```
 
 ```{r Question3: IBU: Create Median IBU Data Set}
@@ -336,6 +447,10 @@ hc_colorAxis(colorIBU, min = 18,
             )
 ```
 
+```{r}
+# We can tell from our grandient geo map that the median IBU varies greatly between states. There are a lot of beers with a lot of different measure for this characteristic of beer. Unlike ABV (which falls in a smaller range), IBU has a lot of possibilities for the new release beers for Budweiser.
+```
+
 ```{r Question 5: Max IBU by State}
 #glimpse(brew.beer)
 maxIBU <- data.frame(brew.beer[which.max(brew.beer$IBU),])
@@ -365,7 +480,7 @@ hc_colorAxis(colorMaxIBU, min = 18,
             )
 ```
 
-## IBU Distribution {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
+## IBU Distribution & Summary{data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
 - 75% of the IBU falls between 30 - 43
 - Higher than Budweiser's 7
 ```{r Question 6: Boxplot of Median IBU distribution, fig.width = 7, fig.height = 5}
@@ -380,6 +495,10 @@ MedianIBU %>% ggplot(mapping = aes(y = medIBU)) +
         axis.text.x=element_blank(),
         axis.ticks.x=element_blank()) +
   ggtitle("Median IBU Distribution") + ylab("Median IBU") + xlab("")
+```
+
+```{r}
+# IBU is measured on a scale from 1 to 100. This scale measures the amount of isomerizes alpha acids in a beer. In general, the standard IBU of Budweiser is 7 in IBU. When we reveiw the above plots we can see the range of median IBU level in beer produced by microbreweries is around 30-43 (75%). These medians are higher than the IBU of Budweiser. For this reason, we recommend that new Budweiser release beers will be higher in IBU than the traditional products.
 ```
 
 # ABV and IBU Correlation {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
@@ -462,23 +581,17 @@ hchart(brew.beerABVper, "scatter", hcaes(x = IBU, y = ABVper, group = Region)) %
   hc_title(text = "Bitterness (IBU) vs. Alcoholic Content (IBU)")
 ```
 
-# Predict Model {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
-## KNN Model was produced {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
-
-
-
-
-
-
-
-
-
-
+## ABV v IBU Summary {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
+- Positive correlation
+- No confirmed causation
+```{r}
+# There is a relationship between IBU and ABV. Based on this scatter plot and correlation line we can see a positive linear relationship. In general, we can confirm that when the ABV of a beer rises so will its IBU.
+```
 
 # Beer Styles by Region {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
 ## Top 5 Beer Styles in the Northeast {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
 ```{r}
-#Question 9: Here we will complete a full analysis of median IBU, average ABV, and popular Style by Region. We will then suggest a full new beer release methodology to Budweiser to compete in the expanding microbrewery industry.
+# Question 9: Here we will complete a full analysis of median IBU, average ABV, and popular Style by Region. We will then suggest a full new beer release methodology to Budweiser to compete in the expanding microbrewery industry.
 ```
 
 ```{r NORTHEAST: Top Beer types in Northeast data manipulation}

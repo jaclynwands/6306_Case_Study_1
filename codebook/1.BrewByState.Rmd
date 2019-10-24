@@ -5,6 +5,7 @@ date: "`r Sys.Date()`"
 output: 
   revealjs::revealjs_presentation:
     transition: slide
+    keep_md: true
     theme: simple
     highlight: pygments
     center: true
@@ -63,8 +64,8 @@ breweryGeo$State <- as.character(breweryGeo$code)
 #str(breweryGeo)
 ```
 
-# Brewery Geo Distribution
-## Breweries by State
+# Brewery Geo Distribution {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
+## Breweries by State {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
 ```{r}
 colBreweries <- hcmap("countries/us/us-all", data = breweryGeo, value = "Breweries",
       joinBy = c("hc-a2", "code"),

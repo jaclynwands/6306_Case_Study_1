@@ -1,5 +1,5 @@
 ---
-title: "Case Study 1: Final Presentation"
+title: "Final Reccomendations and Summary"
 author: "Jaclyn Coate & Huy Hoang Nguyen"
 date: "`r Sys.Date()`"
 output: 

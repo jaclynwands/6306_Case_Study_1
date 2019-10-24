@@ -5,6 +5,7 @@ date: "`r Sys.Date()`"
 output: 
   revealjs::revealjs_presentation:
     transition: slide
+    keep_md: true
     theme: simple
     highlight: pygments
     center: true

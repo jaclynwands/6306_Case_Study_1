@@ -5,6 +5,7 @@ date: "`r Sys.Date()`"
 output: 
   revealjs::revealjs_presentation:
     transition: slide
+    keep_md: true
     theme: simple
     highlight: pygments
     center: true
@@ -26,11 +27,11 @@ knitr::include_graphics("/Users/Jaco/Desktop/SMU/DS_6306_Doing_Data_Science/Unit
 - Microbrewery Analysis
 - Recommended beer releases for microbrewery market entry
 
-# Contributors
-## Huy Hoang Nguyen
+# Contributors {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
+## Huy Hoang Nguyen {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
 - Data Cruncher
 - Hype Crew
 
-## Jaclyn Ann Coate
+## Jaclyn Ann Coate {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
 - Architect
 - Visualization Lover

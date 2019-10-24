@@ -5,6 +5,7 @@ date: "`r Sys.Date()`"
 output: 
   revealjs::revealjs_presentation:
     transition: slide
+    keep_md: true
     theme: simple
     highlight: pygments
     center: true
@@ -49,8 +50,8 @@ beers <- beers %>% dplyr::rename(Name_Beer = Name)
 brew.beer <- full_join(breweries, beers, by = "Brew_ID")
 ```
 
-# ABV and IBU Correlation
-## ABV v IBU
+# ABV and IBU Correlation {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
+## ABV v IBU {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
 - Positive correlation
 - No confirmed causation
 ```{r Scatter plot with densigram, fig.width = 10, fig.height = 5}
@@ -64,8 +65,8 @@ ggMarginal(brew.beerABVper %>% ggplot(mapping = aes(x=IBU, y=ABVper)) +
   theme_excel_new() +
 ggtitle("Bitterness (IBU) vs. Alcoholic Content (IBV)") + ylab("IBU") + xlab("ABV"), type = "densigram", fill = "blue")
 ```
-
-## ABV v IBU by State
+ 
+## ABV v IBU by State {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
 ```{r Scatter plot of IBU vs ABV By State}
 #glimpse(brew.beerABVper)
 hchart(brew.beerABVper, "scatter", hcaes(x = IBU, y = ABVper, group = State)) %>%
@@ -133,7 +134,7 @@ brew.beerABVper$Region[brew.beerABVper$State == "UT"] <- "West"
 #glimpse(brew.beerABVper)
 ```
 
-## ABV v IBU by Region
+## ABV v IBU by Region {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
 ```{r Scatter plot of IBU vs ABV By Region}
 #glimpse(brew.beerABVper)
 hchart(brew.beerABVper, "scatter", hcaes(x = IBU, y = ABVper, group = Region)) %>%

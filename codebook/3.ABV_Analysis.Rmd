@@ -5,6 +5,7 @@ date: "`r Sys.Date()`"
 output: 
   revealjs::revealjs_presentation:
     transition: slide
+    keep_md: true
     theme: simple
     highlight: pygments
     center: true
@@ -76,8 +77,8 @@ brew.beerABV <- brew.beerABV[order(brew.beerABV$MedABV),]
 brew.beerABV$State <- factor(brew.beerABV$State, levels = brew.beerABV$State)
 ```
 
-# Alcohol by Volume (ABV) Analysis
-## Median ABV by State
+# Alcohol by Volume (ABV) Analysis {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
+## Median ABV by State {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
 ```{r geom_bar chart of median ABV by State}
 brew.beerABV %>% ggplot(mapping = aes(x=State, y=MedABV))  +
   geom_bar(stat = "identity", fill = "dark green") +
@@ -101,7 +102,7 @@ brew.beerABV$code <- brew.beerABV$State
 #nrow(brew.beerABV)
 ```
 
-## Median ABV by State
+## Median ABV by State {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
 ```{r hc geo map of Median ABV by State}
 colorABV <- hcmap("countries/us/us-all", data = brew.beerABV, value = "ABVper",
       joinBy = c("hc-a2", "code"), name = "ABV",
@@ -135,8 +136,8 @@ maxABV <- mutate(maxABV, ABVper = ABV * 100)
 maxABV$code <- maxABV$State
 ```
 
-## Highest ABV
-### Colorado at 12.8%
+## Highest ABV {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
+### Colorado at 12.8% {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
 ```{r Geo map of Colorado, fig.width = 7, fig.height = 5}
 colorMaxABV <- hcmap("countries/us/us-all", data = maxABV, value = "ABVper",
       joinBy = c("hc-a2", "code"), name = "ABV",
@@ -154,7 +155,7 @@ hc_colorAxis(colorMaxABV, min = 3,
             )
 ```
 
-## ABV Distribution
+## ABV Distribution {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
 - 75% of the ABV falls between 5.5% - 5.8%
 - Higher than Budweiser's 4.2%
 ```{r Boxplot of Median ABV distribution, fig.width = 7, fig.height = 5}
