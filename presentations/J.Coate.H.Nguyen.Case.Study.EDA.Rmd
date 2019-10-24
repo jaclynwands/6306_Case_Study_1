@@ -479,7 +479,7 @@ hchart(brew.beerABVper, "scatter", hcaes(x = IBU, y = ABVper, group = Region)) %
 # Next Week
 ## Findings
 - ABV, IBU, and Style Analysis by Region
-- Official Reommendations by Region
+- Official Recommendations by Region
 
 # Thank You
 ## Questions?
