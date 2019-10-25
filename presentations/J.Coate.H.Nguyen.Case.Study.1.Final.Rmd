@@ -28,7 +28,7 @@ knitr::include_graphics("/Users/Jaco/Desktop/SMU/DS_6306_Doing_Data_Science/Unit
 ```
 
 ```{r Introduction}
-# As data scientists for Budweiser we were thrilled to help decide on new release beers that will compete with the booming microbrewery growth in the United States. This review will containg an analysis of beer bitterness (or IBU) and alcohol by volume (or ABV) by state. This will lead into our recommendations for new beer releases by regional market in the US. We expect Budweiser to be able to compete and excel in this rapidly expanding sector.
+# As data scientists for Budweiser we were thrilled to help decide on new release beers that will compete with the booming microbrewery growth in the United States. This review will be containing an analysis of beer bitterness (or IBU) and alcohol by volume (or ABV) by state. This will lead into our recommendations for new beer releases by regional market in the US. We expect Budweiser to be able to compete and excel in this rapidly expanding sector.
 ```
 
 ```{r Prepare the environment}
@@ -133,7 +133,7 @@ beers <- read.csv("https://raw.githubusercontent.com/BivinSadler/MDS-6306-Doing-
 #glimpse(beers)
 ```
 
-```{r We obvserve that our key value "Brew_ID" from our breweries data is named "Brewery_id". In order to have these column names match and make tables easier to merge we remane the column in the beer data set.}
+```{r We observe that our key value "Brew_ID" from our breweries data is named "Brewery_id". In order to have these column names match and make tables easier to merge we rename the column in the beer data set.}
 beers <-  beers %>% dplyr::rename( Brew_ID = Brewery_id)
 #glimpse(beers)
 ```
@@ -320,7 +320,7 @@ hc_colorAxis(colorABV, min = 3,
 ```
 
 ```{r}
-# In reviewing our bar chart of Median ABV by state, you can see that there is not a lot of variation in median ABV when comparing state to state. This tells us that while there may be some high ABVs present, normally most breweries fall within a small range. To further show this closeness in Median ABV, we see here our geo map does not have a large range in gradient color. This again shows median ABV does not vary much between states.
+# In reviewing our bar chart of Median ABV by state, you can see that there is not a lot of variations in median ABV when comparing state to state. This tells us that while there may be some high ABVs present, normally most breweries fall within a small range. To further show this closeness in Median ABV, we see here our geo map does not have a large range in gradient color. This again shows median ABV does not vary much between states.
 ```
 
 ```{r Question 5: ABV: Max ABV by State}
@@ -831,3 +831,4 @@ hchart(bbIBU.cleanmed, "column", hcaes(x = Region, y = MedianIBU)) %>%
 ```
 
 # Thank You {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
+
