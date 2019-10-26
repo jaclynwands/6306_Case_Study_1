@@ -700,7 +700,6 @@ hchart(bbIBU.cleanmed, "column", hcaes(x = Region, y = MedianIBU)) %>%
 ```
 
 # Data Review {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
-## K Nearest Neighbors Model {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
 ```{r Question 8}
 # We have performed a full k-nearest neighbor (KNN) analysis on our data. In order to do this, we have identified, classified, and imputed the missing data in order to keep from losing over half of our data set after our full join. This has allowed us to have more confidence in our model.
 ```
@@ -777,10 +776,9 @@ invisible(table(test$type,classifications))
 invisible(confusionMatrix(table(test$type,classifications)))
 ```
 
-## Predictor Model Review {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
+## K Nearest Neighbors Model {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
 - 77% Confidence
 - 75% - 82% Confidence Interval
-
 ```{r}
 # In running a 250-iteration model we are able to have 77% confidence we can classify competitors’ beers on the market based on their IBU and ABV characteristics. We have obtained a confidence interval of 75%-82%. If we use the 11 closest beers to compare (nearest neighbors) we have a 75-82% chance of categorizing the beer correctly as an Ale or IPA.
 
