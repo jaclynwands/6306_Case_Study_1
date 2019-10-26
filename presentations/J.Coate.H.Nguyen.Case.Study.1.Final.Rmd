@@ -171,17 +171,9 @@ invisible(apply(brew.beer,1,pMiss))
 ```
 
 ## Histogram & Pattern of Missing Data {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
-```{r Helpful visual representation}
-aggr_plot <- aggr(brew.beer, col=c('navyblue','red'), 
-                  numbers=TRUE, sortVars=TRUE, 
-                  labels=names(brew.beer), 
-                  cex.axis=.7, gap=3, ylab=c("Histogram of Missing Data","Pattern"))
-
-#brew.beer %>% aggr(col=c('navyblue','red'), 
-#                  numbers=TRUE, sortVars=TRUE, 
-#                  labels=names(brew.beer), 
-#                  cex.axis=.7, gap=3, ylab=c("Histogram of Missing Data","Pattern"))
-
+```{r <Helpful visual representation> aggrmake, results = "hide"}
+aggr.brew.beer <- aggr(brew.beer, labels=names(brew.beer),
+                        cex.axis=.7, gap=3, ylab=c("Histogram of Missing Data","Pattern"))
 #marginplot(brew.beer[,c("ABV","IBU")])
 ```
 
@@ -190,12 +182,12 @@ aggr_plot <- aggr(brew.beer, col=c('navyblue','red'),
 md.pattern(brew.beer)
 ```
 
-```{r  Imputing the missing data}
-brew.beer.impute <- mice(brew.beer[,c("Beer_ID","ABV","IBU")],m=5,maxit=50,meth='pmm',seed=100)
+```{r  Imputing the missing data, results="hide"}
+invisible(brew.beer.impute <- mice(brew.beer[,c("Beer_ID","ABV","IBU")],m=5,maxit=50,meth='pmm',seed=100))
 #summary(brew.beer.impute)
-brew.beer.impute$imp$ABV #check the imputed data ABV
-brew.beer.impute$imp$IBU # check the imputed data IBU
-brew.beer.draft <- complete(brew.beer.impute,1)  # Complete impute dataset
+invisible(brew.beer.impute$imp$ABV) #check the imputed data ABV
+invisible(brew.beer.impute$imp$IBU) # check the imputed data IBU
+invisible(brew.beer.draft <- complete(brew.beer.impute,1))  # Complete impute dataset
 #view(brew.beer.draft)
 ```
 
@@ -208,14 +200,14 @@ brew.beer.New <- full_join(brew.beer, brew.beer.draft, by = "Beer_ID")
 #view(styles)
 ```
 
-```{r Create 2 dataframes  - IPA and Ales and regroup them.}
+```{r Create 2 dataframes  - IPA and Ales and regroup them, results = "hide"}
 Ales.beer <- cbind(brew.beer.New, type='Ales', stringsAsFactors=F) %>% filter(grepl('\\bale\\b', Style, ignore.case=T))
 IPA.beer <- cbind(brew.beer.New, type='IPA', stringsAsFactors=F) %>% filter(grepl('\\bIPA\\b', Style, ignore.case=T))
 IPA.Ales <- union(Ales.beer, IPA.beer)
 IPA.Ales$type <- as.factor(IPA.Ales$type)
 ```
 
-```{r KNN model}
+```{r KNN model, results = "hide"}
 set.seed(5)
 splitPerc = .7
 iterations = 250
@@ -234,11 +226,11 @@ for(j in 1:iterations) {
   }
 }
 MeanAcc = colMeans(masterAcc)
-plot(seq(1,numks,1),MeanAcc, type = "l")
+invisible(plot(seq(1,numks,1),MeanAcc, type = "l"))
 k <- which.max(MeanAcc)
 ```
 
-```{r The best value of k is 11 for %Acurracy}
+```{r The best value of k is 11 for %Acurracy, results = "hide"}
 classifications = knn(train[,c('IBU.New','ABV.New')],test[,c('IBU.New','ABV.New')],train$type, prob = TRUE, k)
 invisible(table(test$type,classifications))
 invisible(confusionMatrix(table(test$type,classifications)))
@@ -246,7 +238,7 @@ invisible(confusionMatrix(table(test$type,classifications)))
 
 ## Predictor Model Review {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
 - 77% Confidence
-- 75%-82% Confidence Interval
+- 75% - 82% Confidence Interval
 
 ```{r}
 # In running a 250-iteration model we are able to have 77% confidence we can classify competitors’ beers on the market based on their IBU and ABV characteristics. We have obtained a confidence interval of 75%-82%. If we use the 11 closest beers to compare (nearest neighbors) we have a 75-82% chance of categorizing the beer correctly as an Ale or IPA.
@@ -282,12 +274,12 @@ brew.beerABV$State <- factor(brew.beerABV$State, levels = brew.beerABV$State)
 ```
 
 # Alcohol by Volume (ABV) Analysis {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
-```{r Question 4: ABV: geom_bar chart of median ABV by State}
-#brew.beerABV %>% ggplot(mapping = aes(x=State, y=ABVper))  +
-#  geom_bar(stat = "identity", fill = "dark green") +
-#  theme_excel_new() + 
-#  theme(legend.position="none", axis.text.x = element_text(angle=65, vjust=0.1)) +
-#  ggtitle("Median ABV by State") + ylab("ABV") + xlab("State") 
+```{r Question 4: ABV: geom_bar chart of median ABV by State, results = "hide"}
+brew.beerABV %>% ggplot(mapping = aes(x=State, y=ABVper))  +
+  geom_bar(stat = "identity", fill = "dark green") +
+  theme_excel_new() + 
+  theme(legend.position="none", axis.text.x = element_text(angle=65, vjust=0.1)) +
+  ggtitle("Median ABV by State") + ylab("ABV") + xlab("State") 
 ```
 
 ```{r ABV: Create key column for geo map to reference}
@@ -399,12 +391,12 @@ brew.beerIBU$State <- factor(brew.beerIBU$State, levels = brew.beerIBU$State)
 ```
 
 # Bitterness (IBU) Analysis {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
-```{r Question 4: geom_bar chart of median IBU by State}
-#brew.beerIBU %>% ggplot(mapping = aes(x=State, y=MedIBU)) +
-#  geom_bar(stat = "identity", fill = "dark blue") +
-#  theme_excel_new() +
- # theme(legend.position="none", axis.text.x = element_text(angle=65, vjust=0.6)) +
-#  ggtitle("Median IBU by State") + ylab("IBU") + xlab("State")
+```{r Question 4: geom_bar chart of median IBU by State, results = "hide"}
+brew.beerIBU %>% ggplot(mapping = aes(x=State, y=MedIBU)) +
+  geom_bar(stat = "identity", fill = "dark blue") +
+  theme_excel_new() +
+  theme(legend.position="none", axis.text.x = element_text(angle=65, vjust=0.6)) +
+  ggtitle("Median IBU by State") + ylab("IBU") + xlab("State")
 ```
 
 ```{r Create key column for geo map to reference}
@@ -500,16 +492,16 @@ MedianIBU %>% ggplot(mapping = aes(y = medIBU)) +
 ```
 
 # ABV & IBU Correlation {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
-```{r Question 7: Scatter plot with densigram, fig.width = 10, fig.height = 5}
+```{r Question 7: Scatter plot with densigram, fig.width = 10, fig.height = 5, results = "hide"}
 #brew.beer
 brew.beerABVper <- mutate(brew.beer, ABVper = ABV * 100)
 #glimpse(brew.beerABVper)
 
-#ggMarginal(brew.beerABVper %>% ggplot(mapping = aes(x=IBU, y=ABVper)) +
-#  geom_point() + 
-#  geom_smooth(method = 'lm') +
-#  theme_excel_new() +
-#ggtitle("Bitterness (IBU) vs Alcoholic Content (IBV)") + ylab("IBU") + xlab("ABV"), type = "densigram", fill = "blue")
+ggMarginal(brew.beerABVper %>% ggplot(mapping = aes(x=IBU, y=ABVper)) +
+  geom_point() + 
+  geom_smooth(method = 'lm') +
+  theme_excel_new() +
+ggtitle("Bitterness (IBU) vs Alcoholic Content (IBV)") + ylab("IBU") + xlab("ABV"), type = "densigram", fill = "blue")
 ```
 
 ```{r Creating R]regional data column based on State}
@@ -806,7 +798,7 @@ hchart(bbIBU.cleanmed, "column", hcaes(x = Region, y = MedianIBU)) %>%
 - Double IPA
 - Pale Wheat Ale
 ```{r}
-# AAbove are the recommended special release styles to be rotated by region in the US. Through our data analysis it was determined that there were not large differences in the most popular styles in the US today. Taking advantage of the cost effectiveness of only releasing 6 different styles of beer will be crucial. Making sure they are released in different regions will promote scarcity - which will in turn create demand.
+# Above are the recommended special release styles to be rotated by region in the US. Through our data analysis it was determined that there were not large differences in the most popular styles in the US today. Taking advantage of the cost effectiveness of only releasing 6 different styles of beer will be crucial. Making sure they are released in different regions will promote scarcity - which will in turn create demand.
 ```
 
 ## ABV & IBU Ranges {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
