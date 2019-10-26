@@ -157,95 +157,6 @@ invisible(brew.beer %>% head(6))
 invisible(brew.beer %>% tail(6))
 ```
 
-
-# Predict Model {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
-## K Nearest Neighbors Model {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
-```{r Question 8}
-# We have performed a full k-nearest neighbor (KNN) analysis on our data. In order to do this, we have identified, classified, and imputed the missing data in order to keep from losing over half of our data set after our full join. This has allowed us to have more confidence in our model.
-```
-
-```{r Classification of missing data}
-invisible(pMiss <- function(x){sum(is.na(x))/length(x)*100})
-invisible(apply(brew.beer,2,pMiss))
-invisible(apply(brew.beer,1,pMiss))
-```
-
-## Histogram & Pattern of Missing Data {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
-```{r <Helpful visual representation> aggrmake, results = "hide"}
-aggr.brew.beer <- aggr(brew.beer, labels=names(brew.beer),
-                        cex.axis=.7, gap=3, ylab=c("Histogram of Missing Data","Pattern"))
-#marginplot(brew.beer[,c("ABV","IBU")])
-```
-
-## Missing Data Pattern {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
-```{r}
-md.pattern(brew.beer)
-```
-
-```{r  Imputing the missing data, results="hide"}
-invisible(brew.beer.impute <- mice(brew.beer[,c("Beer_ID","ABV","IBU")],m=5,maxit=50,meth='pmm',seed=100))
-#summary(brew.beer.impute)
-invisible(brew.beer.impute$imp$ABV) #check the imputed data ABV
-invisible(brew.beer.impute$imp$IBU) # check the imputed data IBU
-invisible(brew.beer.draft <- complete(brew.beer.impute,1))  # Complete impute dataset
-#view(brew.beer.draft)
-```
-
-```{r Create new dataset after imputing the missing data}
-brew.beer.draft <- brew.beer.draft %>% dplyr::rename(ABV.New = ABV)
-brew.beer.draft <- brew.beer.draft %>% dplyr::rename(IBU.New = IBU)
-brew.beer.New <- full_join(brew.beer, brew.beer.draft, by = "Beer_ID")
-#view(brew.beer.New)
-#styles <- unique(brew.beer.New$Style)
-#view(styles)
-```
-
-```{r Create 2 dataframes  - IPA and Ales and regroup them, results = "hide"}
-Ales.beer <- cbind(brew.beer.New, type='Ales', stringsAsFactors=F) %>% filter(grepl('\\bale\\b', Style, ignore.case=T))
-IPA.beer <- cbind(brew.beer.New, type='IPA', stringsAsFactors=F) %>% filter(grepl('\\bIPA\\b', Style, ignore.case=T))
-IPA.Ales <- union(Ales.beer, IPA.beer)
-IPA.Ales$type <- as.factor(IPA.Ales$type)
-```
-
-```{r KNN model, results = "hide"}
-set.seed(5)
-splitPerc = .7
-iterations = 250
-numks = 100 
-masterAcc = matrix(nrow = iterations, ncol = numks)
-for(j in 1:iterations) {
-  accs = data.frame(accuracy = numeric(numks), k = numeric(numks))
-  trainIndices = sample(1:dim(IPA.Ales)[1],round(splitPerc * dim(IPA.Ales)[1]))
-  train = IPA.Ales[trainIndices,]
-  test = IPA.Ales[-trainIndices,]
-  for(i in 1:numks) {
-    classifications = knn(train[,c('IBU.New','ABV.New')],test[,c('IBU.New','ABV.New')],as.factor(train$type), prob = TRUE, k = i)
-    table(as.factor(test$type),classifications)
-    CM = confusionMatrix(table(as.factor(test$type),classifications))
-    masterAcc[j,i] = CM$overall[1]
-  }
-}
-MeanAcc = colMeans(masterAcc)
-invisible(plot(seq(1,numks,1),MeanAcc, type = "l"))
-k <- which.max(MeanAcc)
-```
-
-```{r The best value of k is 11 for %Acurracy, results = "hide"}
-classifications = knn(train[,c('IBU.New','ABV.New')],test[,c('IBU.New','ABV.New')],train$type, prob = TRUE, k)
-invisible(table(test$type,classifications))
-invisible(confusionMatrix(table(test$type,classifications)))
-```
-
-## Predictor Model Review {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
-- 77% Confidence
-- 75% - 82% Confidence Interval
-
-```{r}
-# In running a 250-iteration model we are able to have 77% confidence we can classify competitors’ beers on the market based on their IBU and ABV characteristics. We have obtained a confidence interval of 75%-82%. If we use the 11 closest beers to compare (nearest neighbors) we have a 75-82% chance of categorizing the beer correctly as an Ale or IPA.
-
-# We would have liked to see above 85% and since we are only seeing 77 we will continue our investigation with the omitted NA data instead of incorporating into our final data for drawing our conclusions.
-```
-
 ```{r Question3: ABV: Create Median ABV Data Set}
 brew.beer.cleanABV <- brew.beer %>% filter(!is.na(ABV))
 ```
@@ -786,6 +697,94 @@ colnames(bbIBU.cleanmea) <- c("Region", "MeanIBU")
 hchart(bbIBU.cleanmed, "column", hcaes(x = Region, y = MedianIBU)) %>% 
   hc_title(text = "Median IBU by Region") %>%
   hc_add_theme(hc_theme_google())
+```
+
+# Data Review {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
+## K Nearest Neighbors Model {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
+```{r Question 8}
+# We have performed a full k-nearest neighbor (KNN) analysis on our data. In order to do this, we have identified, classified, and imputed the missing data in order to keep from losing over half of our data set after our full join. This has allowed us to have more confidence in our model.
+```
+
+```{r Classification of missing data}
+invisible(pMiss <- function(x){sum(is.na(x))/length(x)*100})
+invisible(apply(brew.beer,2,pMiss))
+invisible(apply(brew.beer,1,pMiss))
+```
+
+## Histogram & Pattern of Missing Data {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
+```{r <Helpful visual representation> aggrmake, results = "hide"}
+aggr.brew.beer <- aggr(brew.beer, labels=names(brew.beer),
+                        cex.axis=.7, gap=3, ylab=c("Histogram of Missing Data","Pattern"))
+#marginplot(brew.beer[,c("ABV","IBU")])
+```
+
+## Missing Data Pattern {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
+```{r}
+md.pattern(brew.beer)
+```
+
+```{r  Imputing the missing data, results="hide"}
+invisible(brew.beer.impute <- mice(brew.beer[,c("Beer_ID","ABV","IBU")],m=5,maxit=50,meth='pmm',seed=100))
+#summary(brew.beer.impute)
+invisible(brew.beer.impute$imp$ABV) #check the imputed data ABV
+invisible(brew.beer.impute$imp$IBU) # check the imputed data IBU
+invisible(brew.beer.draft <- complete(brew.beer.impute,1))  # Complete impute dataset
+#view(brew.beer.draft)
+```
+
+```{r Create new dataset after imputing the missing data}
+brew.beer.draft <- brew.beer.draft %>% dplyr::rename(ABV.New = ABV)
+brew.beer.draft <- brew.beer.draft %>% dplyr::rename(IBU.New = IBU)
+brew.beer.New <- full_join(brew.beer, brew.beer.draft, by = "Beer_ID")
+#view(brew.beer.New)
+#styles <- unique(brew.beer.New$Style)
+#view(styles)
+```
+
+```{r Create 2 dataframes  - IPA and Ales and regroup them, results = "hide"}
+Ales.beer <- cbind(brew.beer.New, type='Ales', stringsAsFactors=F) %>% filter(grepl('\\bale\\b', Style, ignore.case=T))
+IPA.beer <- cbind(brew.beer.New, type='IPA', stringsAsFactors=F) %>% filter(grepl('\\bIPA\\b', Style, ignore.case=T))
+IPA.Ales <- union(Ales.beer, IPA.beer)
+IPA.Ales$type <- as.factor(IPA.Ales$type)
+```
+
+```{r KNN model, results = "hide"}
+set.seed(5)
+splitPerc = .7
+iterations = 250
+numks = 100 
+masterAcc = matrix(nrow = iterations, ncol = numks)
+for(j in 1:iterations) {
+  accs = data.frame(accuracy = numeric(numks), k = numeric(numks))
+  trainIndices = sample(1:dim(IPA.Ales)[1],round(splitPerc * dim(IPA.Ales)[1]))
+  train = IPA.Ales[trainIndices,]
+  test = IPA.Ales[-trainIndices,]
+  for(i in 1:numks) {
+    classifications = knn(train[,c('IBU.New','ABV.New')],test[,c('IBU.New','ABV.New')],as.factor(train$type), prob = TRUE, k = i)
+    table(as.factor(test$type),classifications)
+    CM = confusionMatrix(table(as.factor(test$type),classifications))
+    masterAcc[j,i] = CM$overall[1]
+  }
+}
+MeanAcc = colMeans(masterAcc)
+invisible(plot(seq(1,numks,1),MeanAcc, type = "l"))
+k <- which.max(MeanAcc)
+```
+
+```{r The best value of k is 11 for %Acurracy, results = "hide"}
+classifications = knn(train[,c('IBU.New','ABV.New')],test[,c('IBU.New','ABV.New')],train$type, prob = TRUE, k)
+invisible(table(test$type,classifications))
+invisible(confusionMatrix(table(test$type,classifications)))
+```
+
+## Predictor Model Review {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
+- 77% Confidence
+- 75% - 82% Confidence Interval
+
+```{r}
+# In running a 250-iteration model we are able to have 77% confidence we can classify competitors’ beers on the market based on their IBU and ABV characteristics. We have obtained a confidence interval of 75%-82%. If we use the 11 closest beers to compare (nearest neighbors) we have a 75-82% chance of categorizing the beer correctly as an Ale or IPA.
+
+# We would have liked to see above 85% and since we are only seeing 77 we will continue our investigation with the omitted NA data instead of incorporating into our final data for drawing our conclusions.
 ```
 
 # Final Recommendations & Summary {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
