@@ -28,7 +28,7 @@ knitr::include_graphics("/Users/Jaco/Desktop/SMU/DS_6306_Doing_Data_Science/Unit
 ```
 
 ```{r Introduction}
-# As data scientists for Budweiser we were thrilled to help decide on new release beers that will compete with the booming microbrewery growth in the United States. This review will containg an analysis of beer bitterness (or IBU) and alcohol by volume (or ABV) by state. This will lead into our recommendations for new beer releases by regional market in the US. We expect Budweiser to be able to compete and excel in this rapidly expanding sector.
+# As data scientists for Budweiser we were thrilled to help decide on new release beers that will compete with the booming microbrewery growth in the United States. This review will contain an analysis of beer bitterness (or IBU) and alcohol by volume (or ABV) by state. This will lead into our recommendations for new beer releases by regional market in the US. We expect Budweiser to be able to compete and excel in this rapidly expanding sector.
 ```
 
 ```{r Prepare the environment}
@@ -124,7 +124,7 @@ hc_colorAxis(colBreweries, min = 1,
 ```
 
 ```{r}
-# In our above gradient colored geo map we can tell there is a large distribution of breweries throughout the United States. California, Colorado, Michigan, and Oregon are all some of the leaders is breweries in the US. Texas gets an honorable mention and is not close behind.  
+# In the above geo map we can tell there is a large distribution of breweries throughout the United States. California, Colorado, Michigan, and Oregon are all some of the leaders in microbreweries in the US. Texas gets an honorable mention and is not close behind.  
 ```
 
 ```{r Question 2: Merge beer data with the breweries data. Print the first 6 observations and the last six observations to check the merged file.}
@@ -158,12 +158,10 @@ brew.beer <- full_join(breweries, beers, by = "Brew_ID")
 ```
 
 
-
-
 # Predict Model {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
 ## K Nearest Neighbors Model {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
 ```{r Question 8}
-# We have performed a full KNN analysis on our data. In order to do this we have identified, classified, and imputed the missing data in order to keep from loosing over half of our data set after our full join. This has allowed us to have more confidence in our model.
+# We have performed a full k-nearest neighbor (KNN) analysis on our data. In order to do this, we have identified, classified, and imputed the missing data in order to keep from losing over half of our data set after our full join. This has allowed us to have more confidence in our model.
 ```
 
 ```{r Classification of missing data}
@@ -172,7 +170,7 @@ invisible(apply(brew.beer,2,pMiss))
 invisible(apply(brew.beer,1,pMiss))
 ```
 
-## Histogram and Pattern of Missing Data {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
+## Histogram & Pattern of Missing Data {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
 ```{r Helpful visual representation}
 aggr_plot <- aggr(brew.beer, col=c('navyblue','red'), 
                   numbers=TRUE, sortVars=TRUE, 
@@ -247,13 +245,13 @@ confusionMatrix(table(test$type,classifications))
 ```
 
 ## Predictor Model Review {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
-- 77% Confidence
-- 75% - 82% Confidence Interval
+-- 77% Confidence
+-- 75% - 82% Confidence Interval
 
 ```{r}
-# In running a 500 interation model we are able to have 77% confidence we could classify comeptitors beers on the market based on their IBU and ABV characteristics. We have obtained a confidence interval of 75%-82% that if we use the 11 closest beers to compare we will categorize the beer correctly if it is missing it's categorization of an IPA versus an Ale.
+# In running a 250-iteration model we are able to have 77% confidence we can classify competitors’ beers on the market based on their IBU and ABV characteristics. We have obtained a confidence interval of 75%-82%. If we use the 11 closest beers to compare (nearest neighbors) we have a 75-82% chance of categorizing the beer correctly as an Ale or IPA.
 
-#We would have liked to see above 85% and since we are only seeing 77 we will continue our investigation with the omitted NA data instead of incorporating into our final data for drawing our conclusions.
+# We would have liked to see above 85% and since we are only seeing 77 we will continue our investigation with the omitted NA data instead of incorporating into our final data for drawing our conclusions.
 ```
 
 ```{r Question3: ABV: Create Median ABV Data Set}
@@ -320,7 +318,7 @@ hc_colorAxis(colorABV, min = 3,
 ```
 
 ```{r}
-# In reviewing our bar chart of Median ABV by state, you can see that there is not a lot of variation in median ABV when comparing state to state. This tells us that while there may be some high ABVs present, normally most breweries fall within a small range. To further show this closeness in Median ABV, we see here our geo map does not have a large range in gradient color. This again shows median ABV does not vary much between states.
+# In reviewing our bar chart of Median ABV by state, you can see that there is not a lot of variation in median ABV when comparing state to state. This tells us that while there may be some high ABVs present, normally most breweries fall within a relatively narrow range. To further show this closeness in Median ABV, we see here our geo map does not have a large range in gradient color.
 ```
 
 ```{r Question 5: ABV: Max ABV by State}
@@ -358,8 +356,8 @@ maxABV$code <- maxABV$State
 ```
 
 ## ABV Distribution & Summary{data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
-- 75% of the ABV falls between 5.5% - 5.8%
-- Higher than Budweiser's 4.2%
+#### 75% of the ABV falls between 5.5% - 5.8%
+#### Higher than Budweiser's 4.2%
 ```{r Question 6: ABV: Boxplot of Median ABV distribution, fig.width = 7, fig.height = 5}
 MedianABV <- brew.beer.cleanABV %>% group_by(State) %>% summarise(medABV = median(c(ABV)))
 MedABVper <- mutate(MedianABV, ABVper = medABV * 100)
@@ -375,7 +373,7 @@ MedABVper %>% ggplot(mapping = aes(y = ABVper)) +
 ```
 
 ```{r}
-# In reviewing this boxplot we can see our Median ABV distribution is small. The majority of the beers (75%) that are produced fall between 5.5% - 5.8%.  This is slightly higher than the mass-produced Budweiser products of 4.2%. Whenever local consumers are given an option, they are likely to choose a microbrew that contains a slightly higher ABV than our traditional products. For this reason, we will be recommending new Budweiser releases by region and of a different ABV than what Budweiser is used to.
+# In reviewing this boxplot, we can see our Median ABV distribution is small. The majority of the beers (75%) that are produced fall between 5.5% - 5.8%.  This is slightly higher than the mass-produced Budweiser products of 4.2%. Whenever local consumers are given an option, they are likely to choose a microbrew that contains a slightly higher ABV than Budweiser’s traditional products. For this reason, we will be recommending new Budweiser releases by region of a different ABV than what Budweiser is used to.
 ```
 
 ```{r Question3: IBU: Create Median IBU Data Set}
@@ -448,7 +446,7 @@ hc_colorAxis(colorIBU, min = 18,
 ```
 
 ```{r}
-# We can tell from our grandient geo map that the median IBU varies greatly between states. There are a lot of beers with a lot of different measure for this characteristic of beer. Unlike ABV (which falls in a smaller range), IBU has a lot of possibilities for the new release beers for Budweiser.
+# We can tell from our gradient geo map that the median IBU varies greatly between states. There are a lot of beers with many different measure for this characteristic of beer. Unlike ABV (which falls in a smaller range), IBU has a lot of possibilities for the new release beers for Budweiser.
 ```
 
 ```{r Question 5: Max IBU by State}
@@ -481,8 +479,8 @@ hc_colorAxis(colorMaxIBU, min = 18,
 ```
 
 ## IBU Distribution & Summary{data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
-- 75% of the IBU falls between 30 - 43
-- Higher than Budweiser's 7
+#### 75% of the IBU falls between 30 - 43
+#### Higher than Budweiser's 7
 ```{r Question 6: Boxplot of Median IBU distribution, fig.width = 7, fig.height = 5}
 brew.beer.cleanIBU <- brew.beer %>% filter(!is.na(IBU))
 MedianIBU <- brew.beer.cleanIBU %>% group_by(State) %>% summarise(medIBU = median(c(IBU)))
@@ -498,12 +496,11 @@ MedianIBU %>% ggplot(mapping = aes(y = medIBU)) +
 ```
 
 ```{r}
-# IBU is measured on a scale from 1 to 100. This scale measures the amount of isomerizes alpha acids in a beer. In general, the standard IBU of Budweiser is 7 in IBU. When we reveiw the above plots we can see the range of median IBU level in beer produced by microbreweries is around 30-43 (75%). These medians are higher than the IBU of Budweiser. For this reason, we recommend that new Budweiser release beers will be higher in IBU than the traditional products.
+# IBU is measured on a scale from 1 to 100. This scale measures the amount of isomerizes alpha acids in a beer. In general, the standard IBU of Budweiser is 7. When we review the above plots, we can see the range of median IBU level in beer produced by microbreweries is around 30-43 (75%). These medians are higher than the IBU of Budweiser. For this reason, we recommend that new Budweiser release beers will be higher in IBU than the traditional products.
 ```
 
-# ABV and IBU Correlation {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
+# ABV & IBU Correlation {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
 ```{r Question 7: Scatter plot with densigram, fig.width = 10, fig.height = 5}
-# There is a relationship between IBU and ABV. Based on this scatter plot we can see a positive linear relationship. In general, we can confirm that when the ABV of a beer rises so will its IBU. However, we cannot determine that this is the cause. 
 #brew.beer
 brew.beerABVper <- mutate(brew.beer, ABVper = ABV * 100)
 #glimpse(brew.beerABVper)
@@ -512,10 +509,10 @@ brew.beerABVper <- mutate(brew.beer, ABVper = ABV * 100)
 #  geom_point() + 
 #  geom_smooth(method = 'lm') +
 #  theme_excel_new() +
-#ggtitle("Bitterness (IBU) vs. Alcoholic Content (IBV)") + ylab("IBU") + xlab("ABV"), type = "densigram", fill = "blue")
+#ggtitle("Bitterness (IBU) vs Alcoholic Content (IBV)") + ylab("IBU") + xlab("ABV"), type = "densigram", fill = "blue")
 ```
 
-```{r Creating Regional Data Column based on State}
+```{r Creating R]regional data column based on State}
 #glimpse(brew.beerABVper)
 brew.beerABVper$Region[brew.beerABVper$State == "ME"] <- "Northeast"
 brew.beerABVper$Region[brew.beerABVper$State == "NH"] <- "Northeast"
@@ -573,15 +570,15 @@ brew.beerABVper$Region[brew.beerABVper$State == "UT"] <- "West"
 #glimpse(brew.beerABVper)
 ```
 
-## ABV v IBU by Region {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
+## ABV vs IBU by Region {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
 ```{r Scatter plot of IBU vs ABV By Region}
 #glimpse(brew.beerABVper)
 hchart(brew.beerABVper, "scatter", hcaes(x = IBU, y = ABVper, group = Region)) %>%
   hc_legend(enabled = FALSE) %>%
-  hc_title(text = "Bitterness (IBU) vs. Alcoholic Content (IBU)")
+  hc_title(text = "Bitterness (IBU) vs Alcoholic Content (IBU)")
 ```
 
-## ABV v IBU Summary {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
+## ABV vs IBU Summary {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
 - Positive correlation
 - No confirmed causation
 ```{r}
@@ -591,7 +588,7 @@ hchart(brew.beerABVper, "scatter", hcaes(x = IBU, y = ABVper, group = Region)) %
 # Beer Styles by Region {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
 ## Top 5 Beer Styles in the Northeast {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
 ```{r}
-# Question 9: Here we will complete a full analysis of median IBU, average ABV, and popular Style by Region. We will then suggest a full new beer release methodology to Budweiser to compete in the expanding microbrewery industry.
+# Question 9: Here we will complete a full analysis of median IBU, average ABV, and popular style by region. We will then have a list of new beer releases by style and a range of IBU and ABVs that should be targeted moving forward by Budweiser in order to compete in the microbrewery market.
 ```
 
 ```{r NORTHEAST: Top Beer types in Northeast data manipulation}
@@ -738,12 +735,11 @@ topWEtype$Region <- as.character(topWEtype$Region)
 ```
 
 ## Regional Style Summary {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
-- Very common trend among styles by Region
+- Very common trend among styles by region
 - Only 6 different beer style favorites between all 4 regions
 
 # Top 6 Beer Styles in the US {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
 ## Top 6 Beer Styles in the US {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
-
 ```{r Combining all type of beer by region dataframes for full view}
 topTypeRegion <- rbind(topMWtype, topSOtype, topNEtype, topWEtype)
 #view(topTypeRegion)
@@ -757,7 +753,7 @@ hctreemap2(topTypeRegion, group_vars = "Type",
   hc_title(text = "Top 6 Beer Styles in the US")
 ```
 
-# ABV and IBU by Region {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
+# ABV & IBU by Region {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
 ## Average ABV by Region {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
 ```{r Mean ABV by region data manipulation}
 #glimpse(brew.beerABVper)
@@ -800,7 +796,7 @@ hchart(bbIBU.cleanmed, "column", hcaes(x = Region, y = MedianIBU)) %>%
   hc_add_theme(hc_theme_google())
 ```
 
-# Final Recommendations and Summary {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
+# Final Recommendations & Summary {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
 ## New Release Beer Charactersitics {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
 ## Styles {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
 - IPA
@@ -810,12 +806,12 @@ hchart(bbIBU.cleanmed, "column", hcaes(x = Region, y = MedianIBU)) %>%
 - Double IPA
 - Pale Wheat Ale
 ```{r}
-# Above are the recommended special releases to be rotated by region in the US. Through our data analysis it was determined that there was not large differences in the most popular styles by region. Taking advantage of the cost effectiveness of only releasing 6 beers will be crucial. Making sure they are released in different regions will promote scarcity - which will in turn create demand.
+# AAbove are the recommended special release styles to be rotated by region in the US. Through our data analysis it was determined that there were not large differences in the most popular styles in the US today. Taking advantage of the cost effectiveness of only releasing 6 different styles of beer will be crucial. Making sure they are released in different regions will promote scarcity - which will in turn create demand.
 ```
 
-## ABV and IBU Ranges {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
+## ABV & IBU Ranges {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
 - ABV: 5.8 - 6.0%
-- IBU: 20 - 30
+- IBU: 20 - 40
 ```{r}
 # Above are the recommended ranges of ABV and IBU for the special release beers.
 ```
@@ -823,11 +819,13 @@ hchart(bbIBU.cleanmed, "column", hcaes(x = Region, y = MedianIBU)) %>%
 ## In Closing {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
 - Scarcity creates demand
 - Beers tailored by region
-- Competitive ABV and IBU ranges
+- Competitive ranges of ABV and IBU
 ```{r}
-# Part of the hype surrounding microbrewery releases in the US is that the beers are not easily attainable. Budweiser can use this to their advantage by having limited releases by region. Only one or two of the redcommended styles at a time. Also making sure that they are only available for a limited time.
-# In our analysis we were able to surface a popular range of ABV and IBU for these new release beers. Breweries are releasing a higher ABV than the standard Budweiser brand. These new release beers will compete with those higher ABV brands.
-# During our IBU review we notcied that IBU is quite higher than the traditional Budweiser brands. For this reason we chose to only recommend a new IBU on th lower side of the range. This is to prevent alienating any of our traditional customers and still allow these new release beers to be palatable for everyone.
+# Part of the hype surrounding microbrewery releases in the US is that the beers are not easily attainable. Budweiser can use this to their advantage by having limited releases by region. Only one or two of the recommended styles at a time. Also making sure that they are only available for a limited time.
+
+# In our analysis we were able to surface a popular range of ABV and IBU for Budweiser’s new release beers. Breweries are releasing a higher ABV than the standard Budweiser brand. These new release beers will compete with those higher ABV brands. We are moving forward with Budweiser releasing any of the above mentioned styles with a range of 5.8%-6.0% ABV.
+
+# During our IBU review we noticed that IBU is quite higher than the traditional Budweiser brands. For this reason, we chose to only recommend a new IBU on the lower side of the range. This is to prevent alienating any of our traditional customers and still allow these new release beers to be palatable for everyone. Moving forward we advise that Budweiser offer their new releases styles with IBUs that range between 20-40 IBU.
 ```
 
 # Thank You {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
