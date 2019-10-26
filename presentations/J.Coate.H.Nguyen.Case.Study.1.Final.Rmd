@@ -489,44 +489,8 @@ hchart(brew.beerABVper, "scatter", hcaes(x = IBU, y = ABVper, group = Region)) %
 ```
 
 # Beer Styles by Region {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
-## Top 5 Beer Styles in the Northeast {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
 ```{r}
 # Question 9: Here we will complete a full analysis of median IBU, average ABV, and popular style by region. We will then have a list of new beer releases by style and a range of IBU and ABVs that should be targeted moving forward by Budweiser in order to compete in the microbrewery market.
-```
-
-```{r NORTHEAST: Top Beer types in Northeast data manipulation}
-#glimpse(brew.beerABVper)
-brew.beerNE <- filter(brew.beerABVper, Region == "Northeast")
-#brew.beerNE
-
-beer.typeNE <- data.frame(table(brew.beerNE$Style))
-#glimpse(beer.typeNE)
-colnames(beer.typeNE) <- c("Type", "Count")
-beer.typeNE$Type <- as.character(beer.typeNE$Type)
-beer.typeNE$Count <- as.numeric(beer.typeNE$Count)
-#glimpse(beer.typeNE)
-
-#view(beer.typeNE)
-topNEtype <- data.frame(beer.typeNE %>% top_n(5))
-#view(topNEtype)
-```
-
-```{r Treemap of top beer styles in the Northeast}
-hctreemap2(topNEtype, group_vars = "Type", 
-           size_var = "Count", color_var = "Count"
-           ) %>% 
-  hc_colorAxis(minColor = brewer.pal(7, "Oranges")[1],
-               maxColor = brewer.pal(7, "Oranges")[7]) %>%
-  hc_title(text = "Top 5 Beer Styles in the Northeast")
-```
-
-```{r Will need to add a Northwest regional column to combine data}
-list1.1 <- 1:5
-list1.2 <- rep("Northeast",length(list1.1))
-topNEtype <- cbind(topNEtype, list1.2)
-colnames(topNEtype) <- c("Type", "Count", "Region")
-topNEtype$Region <- as.character(topNEtype$Region)
-#glimpse(topNEtype)
 ```
 
 ## Top 5 Beer Styles in the South {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
@@ -635,6 +599,42 @@ topWEtype <- cbind(topWEtype, list3.2)
 colnames(topWEtype) <- c("Type", "Count", "Region")
 topWEtype$Region <- as.character(topWEtype$Region)
 #glimpse(topWEtype)
+```
+
+## Top 5 Beer Styles in the Northeast {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
+```{r NORTHEAST: Top Beer types in Northeast data manipulation}
+#glimpse(brew.beerABVper)
+brew.beerNE <- filter(brew.beerABVper, Region == "Northeast")
+#brew.beerNE
+
+beer.typeNE <- data.frame(table(brew.beerNE$Style))
+#glimpse(beer.typeNE)
+colnames(beer.typeNE) <- c("Type", "Count")
+beer.typeNE$Type <- as.character(beer.typeNE$Type)
+beer.typeNE$Count <- as.numeric(beer.typeNE$Count)
+#glimpse(beer.typeNE)
+
+#view(beer.typeNE)
+topNEtype <- data.frame(beer.typeNE %>% top_n(5))
+#view(topNEtype)
+```
+
+```{r Treemap of top beer styles in the Northeast}
+hctreemap2(topNEtype, group_vars = "Type", 
+           size_var = "Count", color_var = "Count"
+           ) %>% 
+  hc_colorAxis(minColor = brewer.pal(7, "Oranges")[1],
+               maxColor = brewer.pal(7, "Oranges")[7]) %>%
+  hc_title(text = "Top 5 Beer Styles in the Northeast")
+```
+
+```{r Will need to add a Northwest regional column to combine data}
+list1.1 <- 1:5
+list1.2 <- rep("Northeast",length(list1.1))
+topNEtype <- cbind(topNEtype, list1.2)
+colnames(topNEtype) <- c("Type", "Count", "Region")
+topNEtype$Region <- as.character(topNEtype$Region)
+#glimpse(topNEtype)
 ```
 
 ## Regional Style Summary {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
