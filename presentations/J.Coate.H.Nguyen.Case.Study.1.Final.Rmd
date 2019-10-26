@@ -754,7 +754,7 @@ hctreemap2(topTypeRegion, group_vars = "Type",
 ```
 
 # ABV & IBU by Region {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
-## Average ABV by Region {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
+## Median ABV by Region {data-background="https://i.ibb.co/M6Yh3pg/In-Bev-Background.png"}
 ```{r Mean ABV by region data manipulation}
 #glimpse(brew.beerABVper)
 #view(brew.beerABVper)
